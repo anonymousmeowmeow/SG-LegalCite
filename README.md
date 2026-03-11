@@ -38,11 +38,23 @@ SG-LegalCite/
 │   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
 │   │   └── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
 │   ├── retrieval/
-│   │   ├── encode_encoders.py     # Encoder model embedding + evaluation
-│   │   ├── encode_decoders.py     # Decoder model embedding + evaluation (QLoRA)
-│   │   ├── finetune_encoder.py    # InfoNCE contrastive fine-tuning for encoders
-│   │   ├── finetune_decoder.py    # InfoNCE contrastive fine-tuning for decoders
-│   │   └── evaluate.py            # MRR, R@1, R@5, R@10, R@20 on 1000-way pool
+│   │   ├── generate_stage2_direct_pools_v2.py        # Pool generation: fact-only baseline
+│   │   ├── generate_stage2_single_stage_pools_v2.py  # Pool generation: principle-augmented
+│   │   ├── sbert_direct_v2v5.py                      # SBERT (fact-only)
+│   │   ├── sbert_single_stage_v1.py                  # SBERT (principle-augmented)
+│   │   ├── customlegalbert_direct_v1.py               # Custom Legal-BERT (fact-only)
+│   │   ├── longformer_direct_v1.py                   # Legal-Longformer (fact-only)
+│   │   ├── pileoflaw_direct_v1.py                    # Pile-of-Law BERT (fact-only)
+│   │   ├── pileoflaw_single_stage_v2.py              # Pile-of-Law BERT (principle-augmented)
+│   │   ├── roberta_large_direct_v1.py                # Legal-English-RoBERTa (fact-only)
+│   │   ├── roberta_large_single_stage_v1.py          # Legal-English-RoBERTa (principle-augmented)
+│   │   ├── sailer_direct_v1.py                       # SAILER (fact-only)
+│   │   ├── adaptllm_direct_v1.py                     # AdaptLLM (fact-only)
+│   │   ├── saullm_direct_v2.py                       # SaulLM-7B (fact-only)
+│   │   ├── saullm_single_stage_v1.py                 # SaulLM-7B (principle-augmented)
+│   │   ├── lawma_direct_v3.py                        # Lawma-8B (fact-only)
+│   │   ├── lawma_single_stage_v2.py                  # Lawma-8B (principle-augmented)
+│   │   └── run_*.pbs                                 # PBS job scripts for SUTD HPC cluster
 ├── img/
 │   ├── pipeline.png               # Dataset construction pipeline figure
 │   ├── legal_hierarchy.png        # Legal citation conceptual structure
