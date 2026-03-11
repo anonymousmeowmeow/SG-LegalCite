@@ -24,11 +24,7 @@ The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–20
 ```
 SG-LegalCite/
 ├── dataset/
-│   ├── README.md                  # Dataset format and field descriptions
-│   ├── train.jsonl                # 80% split (by unique judgment URL)
-│   ├── val.jsonl                  # 10% split
-│   ├── test.jsonl                 # 10% split
-│   └── candidate_pool.jsonl       # All 48,298 unique cited cases
+│   └── README.md                  # Dataset format, field descriptions, and download link
 ├── code/
 │   ├── extraction/
 │   │   ├── 00_Generate_Case_Index.py         # Step 0: Generate master case URL index (2000–2025)
