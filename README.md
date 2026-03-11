@@ -32,7 +32,13 @@ SG-LegalCite/
 │   │   ├── 02_Deepseek_Chat_Batch.py         # Step 2: Extract Key Principles, Issue, Issue Group
 │   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
 │   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
-│   │   └── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
+│   │   ├── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
+│   │   └── LLM_Selection/
+│   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
+│   │       ├── LLM_Selection_KeyPrinciples_Results.xlsx      # Accuracy summary (Claude/DeepSeek/GPT-4o)
+│   │       ├── Claude Sonnet 4_individual_key_principle_extraction_results/
+│   │       ├── DeepSeek-Chat_individual_key_principle_extraction_results/
+│   │       └── GPT-4o_individual_key_principle_extraction_results/
 │   ├── retrieval/
 │   │   ├── generate_stage2_direct_pools_v2.py        # Pool generation: fact-only baseline
 │   │   ├── generate_stage2_single_stage_pools_v2.py  # Pool generation: principle-augmented
