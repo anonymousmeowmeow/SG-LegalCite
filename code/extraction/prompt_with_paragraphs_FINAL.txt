@@ -1,0 +1,140 @@
+System (Do not reveal): You are an expert legal analyst. Your job is to extract structured outputs for legal analytics.
+
+User:
+Task:
+Given a paragraph from a judgment, extract exactly three fields:
+1) Key Principles – use the full formal legal phrasing reflected in the paragraph; do not simplify unless removing procedural noise is strictly necessary.
+2) Issue Group – the high‑level legal category (e.g., "Division of matrimonial assets", "Damages", "Scheme of Arrangement").
+3) Issue – the precise legal issue in judgment style (prefer "Whether…", "When…", "Identifying…", or "Determining…").
+
+Strict Output Requirements:
+- Output must be ONLY a single TSV object with exactly these keys: Key Principles, Issue Group, Issue.
+- No additional keys, comments, or explanations outside TSV.
+- Use formal judgment‑style phrasing. Do not add party names or citations unless essential to state the legal issue.
+
+Example 1:
+Input Paragraph:
+40 The Husband argues that the court should draw an adverse inference against the Wife for failing to disclose bank statements of her account with DBS Bank Ltd. Adverse inferences are appropriate where there is a substratum of evidence that establishes a prima facie case against the person whom the inference is to be drawn, and that person must have had some particular access to the information he or she is said to be hiding: UZN v UZM [2021] 1 SLR 426 at [60]. I agree with the Husband that the Wife has not made full and frank disclosure regarding her DBS Bank account. 41 I draw the adverse inference against the Wife that she had savings in the DBS Bank account. Adopting the uplift approach, I adjust the ratio for the division of the matrimonial assets by 5% in favour of the Husband. This results in a final ratio of 80:20 in favour of the Husband.
+
+Ideal Output:
+{"Key Principles": "Adverse inferences are appropriate where there is a substratum of evidence that establishes a prima facie case against the person whom the inference is to be drawn, and that person must have had some particular access to the information he or she is said to be hiding.", "Issue Group": "Division of matrimonial assets", "Issue": "When adverse inferences should be drawn"}
+
+Example 2:
+Input Paragraph:
+68 ColourOz was decided after the release of the 2020 Practice Statement. There the English High Court reviewed the process for effecting a scheme of arrangement. Snowden J stated that (at [44]): Whilst the court would always have to address a class question even if raised at sanction (because it goes to jurisdiction), the implicit warning now repeated in para 10 of the New Practice Statement is that unless a good reason can be shown, such a late submission is unlikely to be well received and might, in an extreme case, justify disallowing an opposing creditor's costs. 69 In our view, it is clear that the court would have to address a class composition issue even if it was only raised at the sanction hearing without good reason because the issue goes to the court's jurisdiction to sanction the scheme. Even in extreme cases, an objecting creditor's failure to justify their delay will, at most, result in cost consequences.
+
+Ideal Output:
+{"Key Principles": "English High Court reviewed the process for effecting a scheme of arrangement. The Singapore CA interpreted this case in this way: the court would have to address a class composition issue even if it was only raised at the sanction hearing without good reason because the issue goes to the court's jurisdiction to sanction the scheme. In the most extreme cases, a creditor's failure to justify their delay will, at most, result in cost consequences.", "Issue Group": "Scheme of Arrangement", "Issue": "Whether creditors are allowed to object to classification in an untimely manner"}
+
+Example 3:
+Input Paragraph:
+10 In British Transport Commission v Gourley [1956] AC 185 at 206 (which was cited by the Court of Appeal in Yap Boon Fong Yvonne v Wong Kok Mun Alvin [2019] 1 SLR 230), the House of Lords explained that: In an action for personal injuries the damages are always divided into two main parts. First, there is what is referred to as special damage, which has to be specially pleaded and proved. This consists of out-of-pocket expenses and loss of earnings incurred down to the date of trial, and is generally capable of substantially exact calculation. Secondly, there is general damage which the law implies and is not specially pleaded. This includes compensation for pain and suffering and the like, and, if the injuries suffered are such as to lead to continuing or permanent disability, compensation for loss of earning power in the future.
+
+Ideal Output:
+{"Key Principles": "Cited by Yap Boon Fong Yvonne, for the same principle of: for personal injury actions, damages are divided into 2 main parts. Special damages must be specially pleaded and proved, consisting of out-of-pocket expenses and loss of earnings incurred down to the date of trial. General damages is implied by the law and includes compensation for pain and suffering and the like.", "Issue Group": "Damages", "Issue": "Whether the heads of claim were general or special damages"}
+
+Example 4:
+Input Paragraph:
+21 First, a Review Committee is a "sifting mechanism" to weed out frivolous complaints (Deepak Sharma v Law Society of Singapore [2016] 4 SLR 192 at [41]) operating within a tight statutory timeframe: s 85(6) and (8) of the LPA. Its function is to direct the Council to dismiss the matter if it is unanimously of the opinion that the complaint is "frivolous, vexatious, misconceived or lacking in substance", and if so to "give the reasons for the dismissal": s 85(8)(a) of the LPA. It is not the function of a Review Committee to go beyond the heads of complaint presented to it, and attempt to identify additional heads of complaint.
+
+Ideal Output:
+{"Key Principles": "A Review Committee is a 'sifting mechanism' to weed out frivolous complaints that operates within a tight statutory timeframe.", "Issue Group": "Judicial Review", "Issue": "Analysis of complaint and the Review Committee's report"}
+
+Example 5:
+Input Paragraph:
+59 To rely on the partial defence of diminished responsibility, an offender bears the burden of proving three cumulative requirements (Ahmed Salim v Public Prosecutor [2022] 1 SLR 1110 at [32]): (a) first, that he was suffering from an abnormality of mind; (b) second, that the abnormality of mind: (i) arose from a condition of arrested or retarded development of mind; (ii) arose from any inherent cause; or (iii) was induced by disease or injury; and (c) third, the abnormality of mind substantially impaired his mental responsibility for his acts and omissions in relation to his offence. 60 "Abnormality of mind" refers to a state of mind so different from that of ordinary human beings that the reasonable man would term it abnormal.
+
+Ideal Output:
+{"Key Principles": "To rely on the partial defence of diminished responsibility, an offender bears the burden of proving three cumulative requirements (a) first, that he was suffering from an abnormality of mind; (b) second, that the abnormality of mind: (i) arose from a condition of arrested or retarded development of mind; (ii) arose from any inherent cause; or (iii) was induced by disease or injury; and (c) third, the abnormality of mind substantially impaired his mental responsibility for his acts and omissions in relation to his offence.\n\nThere are typically three ways in which a mental condition may substantially impair a person's mental responsibility: (a) where it affects the person's perception of physical acts and matters; (b) where it hinders the person's ability to form a rational judgment as to whether an act is right or wrong; and (c) where it undermines the person's ability to exercise his or her will to control physical acts in accordance with that rational judgment. These categories of factors are not closed and open for contention.\n\nWhere the accused person premeditates to kill under a veneer of rationality, but the decision to kill is in essence the product of his disordered mind, two further requirements must be met to avail of the partial defence of diminished responsibility: (a) the accused person must show that but for his abnormality of mind, he would not have made that decision; and (b) the accused person must prove on a balance of probabilities that in executing his intention to murder, he had no realistic moment of rationality and self-control that would have enabled him to resile from that intention or plan", "Issue Group": "Defence of diminished responsibility", "Issue": "Whether the partial defence of diminished responsibility under Exception 7 to s 300 of the Penal Code is available to the offender"}
+
+Example 6:
+Input Paragraph:
+66 I note that in a recent decision in Amber Compounding Pharmacy Pte Ltd v Lim Suk Ling Priscilla [2023] SGHC 241, the learned Judge clarified that a plaintiff is entitled to plead and claim on the basis of both the wrongful gain interest and the wrongful loss interest in an action for breach of confidence (at [16] and [30]). 70 The plaintiffs have made little distinction between their action for breach of his duty of confidence in equity and their action for breach of his contractual duty of confidentiality. As the law is clear that these are distinct causes of action and should not be conflated (Adinop Co Ltd v Rovithai Ltd [2019] 2 SLR 808 at [37]), I will proceed to analyse them separately.
+
+Ideal Output:
+{"Key Principles": "A plaintiff is entitled to plead and claim on the basis of both the wrongful gain interest and the wrongful loss interest in an action for breach of confidence.", "Issue Group": "Breach of duty of confidence", "Issue": "Applicable law"}
+
+Example 7:
+Input Paragraph:
+42 In Law Society of Singapore v Wong Sin Yee [2018] 5 SLR 1261, the court found (at [45]) that by posing questions in cross-examination that were "indecent, scandalous and calculated to insult or annoy", the respondent solicitor's conduct was "disgraceful and a clear abuse of the privileges of cross-examination". 43 Misconduct under the LPA is a broader "catch-all" provision where the conduct is deemed unacceptable but does not fall within any of the other enumerated grounds: Wong Sin Yee at [24]. 44 The standard applied here is whether reasonable people, on hearing what the solicitor had done, would have said without hesitation that as a solicitor he should not have done it: Wong Sin Yee at [24].
+
+Ideal Output:
+{"Key Principles": "The court here is exercising its appellate jurisdiction over the defendants as an administrative tribunal. Therefore, the court should be slow to disturb or interfere with the findings of fact by the Inquiry Committee unless it can be shown that supporting evidence was lacking or there was some misunderstanding of the evidence or there are other exceptional circumstances justifying the court to do so.\n\nHowever, the CA cautioned that the IC does not make any findings of fact or law, and it's role is to review the determination. It is therefore not quite correct to describe the application to a Judge under s 96 of the LPA as an appeal.", "Issue Group": "Disciplinary Proceedings", "Issue": "Disciplinary framework for regulated legal practitioners - The inquiry process and the recourse to court"}
+
+Example 8:
+Input Paragraph:
+157 We next consider whether SRA was authorised by the Commissioner to take charity proceedings in the High Court, as required by s 31(2) of the Charities Act. The English authorities make clear that the purpose of this statutory filter is to prevent the wasteful expenditure of precious charity funds and assets on litigation. In Muman v Nagasena [2000] 1 WLR 299, the English Court of Appeal stayed court proceedings because they constituted charity proceedings that had been commenced without the requisite authorisation. 159 In Dean v Burne [2009] EWHC 1250 (Ch), Blackburne J took the view that "section 33(4) did not obviate the need for authorisation where the counterclaim was in the nature of a wholly distinct claim and in no sense arose out of the subject matter of the action".
+
+Ideal Output:
+{"Key Principles": "Held that section 33(4) did not obviate the need for authorisation where the counterclaim was in the nature of a wholly distinct claim and in no sense arose out of the subject matter of the action.", "Issue Group": "Statutory interpretation", "Issue": "Statutory interpretation on authorisation"}
+
+Example 9:
+Input Paragraph:
+64 The implied undertaking arises from the principle established in Riddick v Thames Board Mills Ltd [1977] QB 881. In Beckkett Pte Ltd v Deutsche Bank AG [2005] 3 SLR(R) 555, we explained the Riddick principle (at [14]): Where a party to litigation has been ordered to give discovery, the discovering party may not use the discovered documents, and the information obtained therefrom, for a purpose other than pursuing the action in respect of which discovery is obtained. Public interest requires that in relation to an action, there should be full and complete disclosure in the interest of justice. On the other hand, it cannot be denied that discovery on compulsion is an intrusion of privacy. The Riddick principle seeks to strike a balance between these two interests.
+
+Ideal Output:
+{"Key Principles": "Explained the Riddick principle as follows: 'Where a party to litigation has been ordered to give discovery, the discovering party may not use the discovered documents, and the information obtained therefrom, for a purpose other than pursuing the action in respect of which discovery is obtained. Public interest requires that in relation to an action, there should be full and complete disclosure in the interest of justice. On the other hand, it cannot be denied that discovery on compulsion is an intrusion of privacy. The Riddick principle seeks to strike a balance between these two interests.'", "Issue Group": "Whether documents can be adduced as further evidence on appeal", "Issue": "The Riddick principle"}
+
+Example 10:
+Input Paragraph:
+191 In Yien Yieh Commercial Bank Ltd v Kwai Chung Cold Storage Co Ltd [1989] 2 HKLR 639, Lord Goff set out a general principle (at 645): To reject one clause in a contract as inconsistent with another involves a rewriting of the contract which can only be justified in circumstances where the two clauses are in truth irreconcilable. Where the document has been drafted as a coherent whole, repugnancy is extremely unlikely to occur. The contract has, after all, to be read as a whole; and the overwhelming probability is that, on examination, an apparent inconsistency will be resolved by the ordinary processes of construction.
+
+Ideal Output:
+{"Key Principles": "To reject one clause in a contract as inconsistent with another involves a rewriting of the contract which can only be justified in circumstances where the two clauses are in truth irreconcilable. ... where the document has been drafted as a coherent whole, repugnancy is extremely unlikely to occur. The contract has, after all, to be read as a whole; and the overwhelming probability is that, on examination, an apparent inconsistency will be resolved by the ordinary processes of construction", "Issue Group": "Consistency between enforcement procedure and notice provisions", "Issue": "Legal principles in other jurisdictions on whether the bank has a right to unwind"}
+
+Example 11:
+Input Paragraph:
+28 A quantitative assessment of the relative number of syllables which the two marks have in common is usually conducted in ascertaining aural similarity in word marks: Ozone Community at [55]. Here, there are three syllables in both the words, "Nutello" and "Nutella", with the majority in common. 31 The Judge also rightly made allowances for imperfect recollection and careless pronunciation: Future Enterprises Pte Ltd v McDonald's Corp [2006] 4 SLR(R) 629 at [12]. 32 Ultimately, it is the pronunciation of the relevant words as a whole that must be critical in ascertaining aural similarity: Festina Lotus SA v Romanson Co Ltd [2010] 4 SLR 552 at [48].
+
+Ideal Output:
+{"Key Principles": "It is the pronunciation of the relevant words as a whole that must be critical in ascertaining aural similarity", "Issue Group": "Trademark infringement", "Issue": "Similarity between trademarks - Aural similarity"}
+
+Example 12:
+Input Paragraph:
+148 With respect to implication, the courts have indicated their willingness to imply a term of mutual trust and confidence where warranted. In Johnson v Unisys Ltd [2003] 1 AC 518 at [35]–[37], Lord Hoffmann observed that: Over the last 30 years or so, the nature of the contract of employment has been transformed. It has been recognised that a person's employment is usually one of the most important things in his or her life. It gives not only a livelihood but an occupation, an identity and a sense of self-esteem. The law has changed to recognise this new reality. The contribution of the common law to the employment revolution has been by the evolution of implied terms in the contract of employment. The most far reaching is the implied term of trust and confidence.
+
+Ideal Output:
+{"Key Principles": "The courts have indicated their willingness to imply a term of mutual trust and confidence where warranted. Over the last 30 years or so, the nature of the contract of employment has been transformed. It has been recognised that a person's employment is usually one of the most important things in his or her life. It gives not only a livelihood but an occupation, an identity and a sense of self-esteem. The law has changed to recognise this new reality... The contribution of the common law to the employment revolution has been by the evolution of implied terms in the contract of employment. The most far reaching is the implied term of trust and confidence", "Issue Group": "Bonuses", "Issue": "Mutual trust and confidence to determine entitlement to bonuses"}
+
+Example 13:
+Input Paragraph:
+161 The elements of the tort of unlawful means conspiracy can be summarised as follows: (a) There must be a combination of two or more persons and an agreement between or among them to do certain acts: Nagase Singapore v Ching Kai Huat [2008] 1 SLR(R) 80 at [23]. (b) The conspiracy must be done by "unlawful means", which covers both a criminal act as well as an intentional tortious act: Beckkett Pte Ltd v Deutsche Bank AG [2009] 3 SLR(R) 452 at [120]. (c) The act must actually be performed in furtherance of the agreement. (d) There must be an intention to injure the plaintiff. (e) Damage must be suffered by the plaintiff.
+
+Ideal Output:
+{"Key Principles": "The elements of the tort of unlawful means conspiracy include: (a) There must be a combination of two or more persons and an agreement between or among them to do certain acts. (c) The act must actually be performed in furtherance of the agreement (e) Damage must be suffered by the plaintiff", "Issue Group": "Tort of unlawful means conspiracy", "Issue": "Whether there is a claim under the tort of unlawful means conspiracy"}
+
+Example 14:
+Input Paragraph:
+72 In Digicel (St Lucia) Ltd v Cable and Wireless plc [2008] EWHC 2522 (Ch), Justice Morgan observed (at [46]): It must be remembered that what is generally required by an order for standard disclosure is a "reasonable search" for relevant documents. Thus, the rules do not require that no stone should be left unturned. This may mean that a relevant document, even "a smoking gun" is not found. This attitude is justified by considerations of proportionality. 74 As Lord Justice Jacob observed in Nichia Corporation v Argos Limited [2007] EWCA Civ 741 at [50]–[51]: "Perfect justice" in one sense involves a tribunal examining every conceivable aspect of a dispute. But a system which sought such "perfect justice" in every case would actually defeat justice. The cost and time involved would make it impossible to decide all but the most vastly funded cases. So a compromise is made: one makes do with a lesser procedure even though it may result in the justice being rougher. Putting it another way, better justice is achieved by risking a little bit of injustice.
+
+Ideal Output:
+{"Key Principles": "There is more to be said about the change to standard disclosure and indeed to the express introduction of proportionality into the rules of procedure. 'Perfect justice' in one sense involves a tribunal examining every conceivable aspect of a dispute. All relevant witness and all relevant documents need to be considered. And each party must be given a full opportunity of considering everything and challenging anything it wishes. No stone, however small, should remain unturned. Even the adversarial system at its most expensive in this country has not gone that far. For instance we do not include the evidence of a potentially material witness if neither side calls him or her. Nor do we allow pre-trial oral disclosure from all potential witnesses as is (or at least was) commonly the practice in the US.\n\nBut a system which sought such 'perfect justice' in every case would actually defeat justice. The cost and time involved would make it impossible to decide all but the most vastly funded cases. The cost of nearly every case would be greater than what it is about. Life is too short to investigate everything in that way. So a compromise is made: one makes do with a lesser procedure even though it may result in the justice being rougher. Putting it another way, better justice is achieved by risking a little bit of injustice.", "Issue Group": "Electronic Discovery", "Issue": "Extent to which inspection of compound document is allowed in England"}
+
+Example 15:
+Input Paragraph:
+30 In Re MC Bacon Ltd [1990] BCLC 324, Millett J discussed the changes brought by the UK Insolvency Act 1986. In relation to unfair preference, Millett J observed (at 335): It is no longer necessary to establish a dominant intention to prefer. It is sufficient that the decision was influenced by the requisite desire. That is the first change. The second is that it is no longer sufficient to establish an intention to prefer. There must be a desire to produce the effect mentioned in the subsection. Since "desire" has been substituted as the relevant test, it is the subjective desire of the company to improve the creditor's position in the event of its imminent insolvency that is decisive (see Re Bacon at 335–336). 31 There is no need for direct evidence of the requisite desire as such desire can be inferred from the circumstances of the case.
+
+Ideal Output:
+{"Key Principles": "It is no longer necessary to establish a dominant intention to prefer. It is sufficient that the decision was influenced by the requisite desire. That is the first change. The second is that it is no longer sufficient to establish an intention to prefer. There must be a desire to produce the effect mentioned in the subsection.", "Issue Group": "Unfair preference", "Issue": "Whether the plaintiff was influenced by a desire to prefer the defendant"}
+
+
+========================================
+PRODUCTION RESPONSE FORMAT (FOR EXCEL)
+========================================
+When responding to new inputs, output a SINGLE TSV (tab-separated) table that can be opened directly in Excel.
+
+STRICT TSV RULES
+- Include a HEADER ROW.
+- Columns (exact order): Cited Case	Paragraph	Key Principles Illustrated	Issue	Issue Group
+- One row per input paragraph.
+- Use literal TAB characters between columns (not spaces).
+- No Markdown fences, no TSV, no commentary, no extra columns.
+- If a value is unknown, leave the cell empty (do not write "N/A").
+- Preserve full legal phrasing; do not abbreviate or paraphrase the Key Principles.
+- Do not include party names or citations unless essential to state the legal issue.
+
+TSV EXAMPLE (header + one row)
+Cited Case	Paragraph	Key Principles Illustrated	Issue	Issue Group
+<case here>	<paragraph text here>	<full, formal legal principles here>	<whether/when/identifying/determining ...>	<group here>
+
+Now proceed to read the next input paragraph(s) and respond ONLY with the TSV table as specified above.
