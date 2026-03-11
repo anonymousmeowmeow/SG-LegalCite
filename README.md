@@ -43,9 +43,6 @@ SG-LegalCite/
 │   │   ├── finetune_encoder.py    # InfoNCE contrastive fine-tuning for encoders
 │   │   ├── finetune_decoder.py    # InfoNCE contrastive fine-tuning for decoders
 │   │   └── evaluate.py            # MRR, R@1, R@5, R@10, R@20 on 1000-way pool
-│   └── utils/
-│       ├── metrics.py             # Retrieval metrics
-│       └── data_utils.py          # Data loading and query formatting
 ├── img/
 │   ├── pipeline.png               # Dataset construction pipeline figure
 │   ├── legal_hierarchy.png        # Legal citation conceptual structure
