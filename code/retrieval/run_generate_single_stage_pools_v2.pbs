@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -N gen_single_stage_v2
+#PBS -l select=1:ncpus=4:ngpus=0:mem=32gb
+#PBS -l walltime=01:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o generate_single_stage_pools_v2.log
+
+echo "=========================================="
+echo "SG-LegalCite: Generate Single-Stage Pools V2"
+echo "Task: [FACT] Fact [PRINCIPLE] Ground Truth Principle → Cited Case"
+echo "Pool: 1 correct case + 999 random negatives"
+echo "One pool per (fact, principle, cited_case) triple"
+echo "Ground truth principles used directly (no Stage 1)"
+echo "Started: $(date)"
+echo "=========================================="
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python generate_stage2_single_stage_pools_v2.py
+
+echo "Finished: $(date)"

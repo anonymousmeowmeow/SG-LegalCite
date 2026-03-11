@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -N gen_direct_pools_v2
+#PBS -l select=1:ncpus=4:ngpus=0:mem=32gb
+#PBS -l walltime=01:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o generate_stage2_direct_pools_v2.log
+
+echo "=========================================="
+echo "SG-LegalCite: Generate Stage 2 Direct Baseline V2 Pools"
+echo "Task: Facts → Cited Case (no key principles)"
+echo "Pool: 1 correct case + 999 random negatives"
+echo "Evaluated at (fact, principle, cited_case) triple level"
+echo "7358 pools total — consistent with Stage 1 and V3"
+echo "Started: $(date)"
+echo "=========================================="
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python generate_stage2_direct_pools_v2.py
+
+echo "Finished: $(date)"
