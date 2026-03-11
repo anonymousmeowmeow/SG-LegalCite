@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -N pileoflaw_single_v2
+#PBS -l select=1:ncpus=28:ngpus=7:mem=175gb:host=aimc-gna2
+#PBS -l walltime=24:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o pileoflaw_single_stage_v2.log
+
+echo "=========================================="
+echo "SG-LegalCite Single Stage — Pile-of-Law BERT Large"
+echo "Model: pile-of-law/legalbert-large-1.7M-2 (BERT-Large, 340M params)"
+echo "Pre-training: 256GB Pile of Law (35 legal sources)"
+echo "Task: [FACT] Fact + [PRINCIPLE] Ground Truth Principle → Cited Case"
+echo "Zero-Shot + Fine-Tuned"
+echo "Pool: SAME as all models — stage2_single_stage_pools.json"
+echo "9979 pools — one per (fact, principle, cited_case) triple"
+echo "Started: $(date)"
+echo "=========================================="
+echo "Config: BATCH=64, EPOCHS=10, LR=2e-5, POOLING=mean, num_workers=4, pin_memory=True"
+echo "Note: Same settings as Legal BERT / SBERT / Custom Legal-BERT / Legal-Longformer"
+echo "GPUs: 7 x A100"
+
+cd $PBS_O_WORKDIR
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python pileoflaw_single_stage_v2.py
+
+echo "Finished: $(date)"

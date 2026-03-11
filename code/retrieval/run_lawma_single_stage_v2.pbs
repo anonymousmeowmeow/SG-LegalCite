@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -N lawma_ss_v2
+#PBS -l select=1:ncpus=20:ngpus=5:mem=150gb:host=aimc-gna2
+#PBS -l walltime=100:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o lawma_single_stage_v2.log
+
+echo "============================================================"
+echo "LawMA 8B Single Stage"
+echo "------------------------------------------------------------"
+echo "Task:    [FACT] Facts + [PRINCIPLE] Principle → Cited Case"
+echo "Pool:    stage2_single_stage_pools.json (9979 pools)"
+echo "Split:   By URL (identical to all other models)"
+echo "Batch:   64 | Epochs: 10 (early stopping patience=3) | LR: 2e-5 | Warmup: 0.1"
+echo "Temp:    learnable, init=0.07"
+echo "QLoRA:   r=16, alpha=32, dropout=0.1"
+echo "Attn:    SDPA (flash_attn mocked — broken in container)"
+echo "GPUs:    5x A100 (aimc-gna2)"
+echo "Parts:   Zero-Shot eval → Fine-Tuning → Fine-Tuned eval"
+echo "Started: $(date)"
+echo "============================================================"
+
+cd $PBS_O_WORKDIR
+echo "Working dir: $(pwd)"
+echo ""
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo ""
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python lawma_single_stage_v2.py
+
+echo ""
+echo "============================================================"
+echo "Finished: $(date)"
+echo "============================================================"
