@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -N single_stage_v4
+#PBS -l select=1:ncpus=28:ngpus=7:mem=175gb:host=aimc-gna2
+#PBS -l walltime=24:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o legalbert_single_stage_v4.log
+
+echo "=========================================="
+echo "SG-LegalCite Single Stage V4"
+echo "Task: [FACT] Fact [PRINCIPLE] Ground Truth Principle → Cited Case"
+echo "Zero-Shot + Fine-Tuned Legal BERT"
+echo "Pool: 1 correct + 999 random | 9979 pools"
+echo "One pool per (fact, principle, cited_case) triple"
+echo "Ground truth principles used directly (no Stage 1)"
+echo "Started: $(date)"
+echo "=========================================="
+echo "Config: BATCH=64, EPOCHS=10, LR=2e-5"
+echo "GPUs: 7 x A100"
+
+cd $PBS_O_WORKDIR
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python legalbert_single_stage.py
+
+echo "Finished: $(date)"

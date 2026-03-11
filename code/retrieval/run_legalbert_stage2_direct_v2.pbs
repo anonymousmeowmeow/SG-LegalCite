@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N stage2_direct_v2
+#PBS -l select=1:ncpus=28:ngpus=7:mem=175gb
+#PBS -l walltime=24:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o legalbert_stage2_direct_v2.log
+
+echo "=========================================="
+echo "SG-LegalCite Stage 2 Direct Baseline V2"
+echo "Task: Facts → Cited Case (no key principles)"
+echo "Zero-Shot + Fine-Tuned Legal BERT"
+echo "Pool: 1 correct + 999 random | 9942 pools"
+echo "Fair comparison with V3 (1 correct case per pool)"
+echo "Started: $(date)"
+echo "=========================================="
+echo "Config: BATCH=64, EPOCHS=10, LR=2e-5"
+echo "GPUs: 7 x A100"
+
+cd $PBS_O_WORKDIR
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python legalbert_stage2_direct_v2.py
+
+echo "Finished: $(date)"
