@@ -33,12 +33,25 @@ SG-LegalCite/
 │   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
 │   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
 │   │   ├── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
-│   │   └── LLM_Selection/
+│   │   ├── LLM_Selection/
 │   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
 │   │       ├── LLM_Selection_KeyPrinciples_Results.xlsx      # Accuracy summary (Claude/DeepSeek/GPT-4o)
 │   │       ├── Claude Sonnet 4_individual_key_principle_extraction_results/
 │   │       ├── DeepSeek-Chat_individual_key_principle_extraction_results/
 │   │       └── GPT-4o_individual_key_principle_extraction_results/
+│   │   └── Few-Shot Experiments (DeepSeek-Chat)/
+│   │       ├── FewShot_Experiments_DeepSeek.ipynb            # Few-shot evaluation notebook
+│   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx      # Accuracy summary (0/5/10/15/20-shot)
+│   │       ├── Zero-Shot_individual_issue_extraction_results/
+│   │       ├── Zero-Shot_individual_keyprinciple_extraction_results/
+│   │       ├── 5-Shot_individual_issue_extraction_results/
+│   │       ├── 5-Shot_individual_keyprinciple_extraction_results/
+│   │       ├── 10-Shot_individual_issue_extraction_results/
+│   │       ├── 10-Shot_individual_keyprinciple_extraction_results/
+│   │       ├── 15-Shot_individual_issue_extraction_results/
+│   │       ├── 15-Shot_individual_keyprinciple_extraction_results/
+│   │       ├── 20-Shot_individual_issue_extraction_results/
+│   │       └── 20-Shot_individual_keyprinciple_extraction_results/
 │   ├── retrieval/
 │   │   ├── generate_stage2_direct_pools_v2.py        # Pool generation: fact-only baseline
 │   │   ├── generate_stage2_single_stage_pools_v2.py  # Pool generation: principle-augmented
