@@ -31,9 +31,12 @@ SG-LegalCite/
 │   └── candidate_pool.jsonl       # All 48,298 unique cited cases
 ├── code/
 │   ├── extraction/
-│   │   ├── scrape_elitigation.py  # Playwright + BeautifulSoup scraper
-│   │   ├── extract_facts.py       # Judgment-level fact summarisation (DeepSeek)
-│   │   └── extract_principles.py  # Citation-level principle extraction (DeepSeek, 15-shot)
+│   │   ├── 00_Generate_Case_Index.py         # Step 0: Generate master case URL index (2000–2025)
+│   │   ├── 01_Extract_Cited_Cases_Batch.py   # Step 1: Extract cited cases + paragraph context
+│   │   ├── 02_Deepseek_Chat_Batch.py         # Step 2: Extract Key Principles, Issue, Issue Group
+│   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
+│   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
+│   │   └── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
 │   ├── retrieval/
 │   │   ├── encode_encoders.py     # Encoder model embedding + evaluation
 │   │   ├── encode_decoders.py     # Decoder model embedding + evaluation (QLoRA)
@@ -80,16 +83,22 @@ Each record is a triplet **(f, k, c)**:
 
 ![Pipeline](img/pipeline.png)
 
-The pipeline proceeds in three stages:
+The pipeline proceeds in five steps:
 
-**Stage 1 — Citation and Context Extraction**
+**Step 0 — Case Index Generation (`00_Generate_Case_Index.py`)**
+Probes eLitigation to enumerate valid judgment URLs across all court types (SGHC, SGCA, SGCAI, SGHCF, SGHCR) for 2000–2025. Outputs a master CSV with columns: `Year, Court_Type, Case_Number, URL, Full_Reference`.
+
+**Step 1 — Citation and Context Extraction (`01_Extract_Cited_Cases_Batch.py`)**
 Playwright + BeautifulSoup extract cited case names and ±5 surrounding paragraphs from eLitigation HTML. No LLM involvement.
 
-**Stage 2 — Judgment-Level Fact Extraction**
-Three-tier heading fallback strategy locates the Background/Facts section of each judgment. DeepSeek-Chat (T=0.2, max 512 tokens) compresses the scraped section (~1,034 tokens) into a 2–3 sentence lawyer-style summary (~45 tokens), a 23× compression.
+**Step 2 — Citation-Level Principle Extraction (`02_Deepseek_Chat_Batch.py`)**
+DeepSeek-Chat (15-shot, T=0) extracts three fields per citation: (1) Key Principles Illustrated, (2) Issue Group, (3) Issue. Uses `prompt_with_paragraphs_FINAL.txt`.
 
-**Stage 3 — Citation-Level Principle Extraction**
-DeepSeek-Chat (15-shot, T=0) extracts three fields per citation: (1) Key Principles Illustrated, (2) Issue Group, (3) Issue.
+**Step 3 — Judgment-Level Fact Extraction (`03_Fact_Query_Batch.py`)**
+Three-tier heading fallback strategy locates the Background/Facts section of each judgment. DeepSeek-Chat (T=0.2, max 512 tokens) compresses the scraped section (~1,034 tokens) into a 2–3 sentence lawyer-style `Fact_Query` (~45 tokens), a 23× compression.
+
+**Step 4 — Final Concatenation (`04_Final_Concatenation_Batch.py`)**
+Adds `Case Name` (scraped from eLitigation) and `Precedential Weight` (Binding / Comity / Persuasive, derived from court hierarchy). Produces the final dataset CSV.
 
 **Source code:** [`code/extraction/`](code/extraction/)
 
