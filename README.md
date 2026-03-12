@@ -132,7 +132,7 @@ Adds `Case Name` (scraped from eLitigation) and `Precedential Weight` (Binding /
 
 **Source code:** [`code/extraction/`](code/extraction/)
 
-### LLM Selection (15-shot, n=150 samples)
+### LLM Selection (15-shot, n=150 samples, Key Principles)
 
 | Model | Accuracy | Cost/Case |
 |---|---|---|
