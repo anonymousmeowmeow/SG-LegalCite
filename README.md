@@ -1,7 +1,7 @@
 # SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation
 
 > **Paper:** *SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation*
-> Accepted at [SIGIR 2026]
+> 
 >
 > **Dataset:** [HuggingFace](https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite) | **Paper:** [[arXiv / ACL Anthology link]](#)
 
