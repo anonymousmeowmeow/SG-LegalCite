@@ -3,7 +3,7 @@
 > **Paper:** *SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation*
 > Accepted at [SIGIR 2026]
 >
-> **Dataset:** [[HuggingFace / Zenodo link]](#) | **Paper:** [[arXiv / ACL Anthology link]](#)
+> **Dataset:** [HuggingFace](https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite) | **Paper:** [[arXiv / ACL Anthology link]](#)
 
 ---
 
@@ -105,7 +105,7 @@ SG-LegalCite/
 Each record is a triplet **(f, k, c)**:
 - **f** — Factual background of the citing judgment (LLM-summarised to ~45 tokens)
 - **k** — Legal principle for which the precedent is cited
-- **c** — Cited Case
+- **c** — Cited Singapore Supreme Court case
 
 ---
 
@@ -128,11 +128,11 @@ DeepSeek-Chat (15-shot, T=0) extracts three fields per citation: (1) Key Princip
 Three-tier heading fallback strategy locates the Background/Facts section of each judgment. DeepSeek-Chat (T=0.2, max 512 tokens) compresses the scraped section (~1,034 tokens) into a 2–3 sentence lawyer-style `Fact_Query` (~45 tokens), a 23× compression.
 
 **Step 4 — Final Concatenation (`04_Final_Concatenation_Batch.py`)**
-Adds `Case Name` (scraped from eLitigation) and `Precedential Weight` (Binding / Comity / Persuasive, derived from court hierarchy). Produces the final dataset CSV.
+Adds `Case Name` (scraped from eLitigation) and `Current Court Level` (derived from court type). Produces the final dataset CSV.
 
 **Source code:** [`code/extraction/`](code/extraction/)
 
-### LLM Selection (15-shot, n=150 samples, Key Principles)
+### LLM Selection (15-shot, n=150 samples)
 
 | Model | Accuracy | Cost/Case |
 |---|---|---|
