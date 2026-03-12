@@ -105,7 +105,7 @@ SG-LegalCite/
 Each record is a triplet **(f, k, c)**:
 - **f** — Factual background of the citing judgment (LLM-summarised to ~45 tokens)
 - **k** — Legal principle for which the precedent is cited
-- **c** — Cited Singapore Supreme Court case
+- **c** — Cited Case
 
 ---
 
