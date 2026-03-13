@@ -294,10 +294,15 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool, principle-augmen
 These barriers are noted to highlight reproducibility challenges in legal NLP.
 
 ---
-
 ## Citation
-
 If you use SG-LegalCite in your work, please cite:
+```bibtex
+@inproceedings{lee2026sglegalcite,
+  title  = {SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Retrieval},
+  author = {Lee, Shannon Yueh Ern and Du, Yingpeng and Feng, Kaidong and Loi, Kelry and Lee, Chloe},
+  year   = {2026}
+}
+```
 
 
 ---
