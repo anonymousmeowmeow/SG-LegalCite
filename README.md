@@ -299,14 +299,6 @@ These barriers are noted to highlight reproducibility challenges in legal NLP.
 
 If you use SG-LegalCite in your work, please cite:
 
-```bibtex
-@inproceedings{lee2026sglegalcite,
-  title     = {SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation},
-  author    = {Lee, Shannon Yueh Ern and Du, Yingpeng and Feng, Kaidong and Loi, Kelry and Lee, Chloe En Jia and Sun, Zhu},
-  booktitle = {Proceedings of the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval},
-  year      = {2026}
-}
-```
 
 ---
 
