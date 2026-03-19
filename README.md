@@ -1,7 +1,6 @@
 # SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation
 
 > **Paper:** *SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation*
-> 
 >
 > **Dataset:** [HuggingFace](https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite) | **Paper:** [[arXiv / ACL Anthology link]](#)
 
@@ -15,7 +14,7 @@ Legal citation recommendation in common-law practice requires retrieving precede
 
 > **[FACT]** *case facts* + **[PRINCIPLE]** *legal principle* → *cited case*
 
-The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–2025) using a cost-effective LLM pipeline validated by legal experts from NUS Law and SMU Yong Pung How School of Law.
+The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–2025) using a cost-effective LLM pipeline validated by legal experts from two Singapore law schools.
 
 ---
 
@@ -75,7 +74,7 @@ SG-LegalCite/
 │   │   ├── saullm_single_stage_v1.py                 # SaulLM-7B (principle-augmented)
 │   │   ├── lawma_direct_v3.py                        # Lawma-8B (fact-only)
 │   │   ├── lawma_single_stage_v2.py                  # Lawma-8B (principle-augmented)
-│   │   └── run_*.pbs                                 # PBS job scripts for SUTD HPC cluster
+│   │   └── run_*.pbs                                 # PBS job scripts for HPC cluster
 ├── img/
 │   ├── pipeline.png               # Dataset construction pipeline figure
 │   ├── legal_hierarchy.png        # Legal citation conceptual structure
@@ -294,16 +293,17 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool, principle-augmen
 These barriers are noted to highlight reproducibility challenges in legal NLP.
 
 ---
+
 ## Citation
+
 If you use SG-LegalCite in your work, please cite:
 ```bibtex
-@inproceedings{lee2026sglegalcite,
+@inproceedings{anonymous2026sglegalcite,
   title  = {SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Retrieval},
-  author = {Lee, Shannon Yueh Ern and Du, Yingpeng and Feng, Kaidong and Loi, Kelry and Lee, Chloe},
+  author = {Anonymous Authors},
   year   = {2026}
 }
 ```
-
 
 ---
 
@@ -317,4 +317,4 @@ Code is released under the MIT License.
 
 ## Acknowledgements
 
-Expert validation was conducted by legally qualified annotators from the National University of Singapore Faculty of Law and Singapore Management University Yong Pung How School of Law. Experiments were run on SUTD's HPC cluster (A100 GPUs).
+Expert validation was conducted by legally qualified annotators from two Singapore law schools. Experiments were run on a university HPC cluster (A100 GPUs).
