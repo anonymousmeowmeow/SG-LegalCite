@@ -31,7 +31,7 @@ SG-LegalCite/
 │   │   ├── 02_Deepseek_Chat_Batch.py         # Step 2: Extract Key Principles, Issue, Issue Group
 │   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
 │   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
-│   │   ├── Scrape Cited Case Judgements Pipeline.py  # Combined scraping pipeline
+│   │   ├── Scrape Cited Case Judgements Pipeline.py  # Scrape full judgment text for cited cases
 │   │   ├── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
 │   │   ├── LLM_Selection/
 │   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
