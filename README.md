@@ -31,6 +31,7 @@ SG-LegalCite/
 │   │   ├── 02_Deepseek_Chat_Batch.py         # Step 2: Extract Key Principles, Issue, Issue Group
 │   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
 │   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
+│   │   ├── Scrape Cited Case Judgements Pipeline.py  # Combined scraping pipeline
 │   │   ├── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
 │   │   ├── LLM_Selection/
 │   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
@@ -38,7 +39,7 @@ SG-LegalCite/
 │   │       ├── Claude Sonnet 4_individual_key_principle_extraction_results/
 │   │       ├── DeepSeek-V3_individual_key_principle_extraction_results/
 │   │       └── GPT-4o_individual_key_principle_extraction_results/
-│   │   └── Few-Shot Experiments (DeepSeek-V3)/
+│   │   └── Few-Shot Experiments (DeepSeek-Chat)/
 │   │       ├── FewShot_Experiments_DeepSeek.ipynb            # Few-shot evaluation notebook
 │   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx      # Accuracy summary (0/5/10/15/20-shot)
 │   │       ├── Zero-Shot_individual_issue_extraction_results/
