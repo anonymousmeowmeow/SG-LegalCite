@@ -1,6 +1,6 @@
-# SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation
+# SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law
 
-> **Paper:** *SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Recommendation*
+> **Paper:** *SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law*
 >
 > **Dataset:** [HuggingFace](https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite) | **Paper:** [[arXiv / ACL Anthology link]](#)
 
@@ -36,9 +36,9 @@ SG-LegalCite/
 │   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
 │   │       ├── LLM_Selection_KeyPrinciples_Results.xlsx      # Accuracy summary (Claude/DeepSeek/GPT-4o)
 │   │       ├── Claude Sonnet 4_individual_key_principle_extraction_results/
-│   │       ├── DeepSeek-Chat_individual_key_principle_extraction_results/
+│   │       ├── DeepSeek-V3_individual_key_principle_extraction_results/
 │   │       └── GPT-4o_individual_key_principle_extraction_results/
-│   │   └── Few-Shot Experiments (DeepSeek-Chat)/
+│   │   └── Few-Shot Experiments (DeepSeek-V3)/
 │   │       ├── FewShot_Experiments_DeepSeek.ipynb            # Few-shot evaluation notebook
 │   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx      # Accuracy summary (0/5/10/15/20-shot)
 │   │       ├── Zero-Shot_individual_issue_extraction_results/
@@ -91,7 +91,7 @@ SG-LegalCite/
 |---|---|
 | Time Span | 2000–2025 |
 | Unique Judgments | 8,494 |
-| Principle–Case Pairs | 100,554 |
+| Case–Principle Pairs | 100,554 |
 | Unique Principles | 72,264 |
 | Unique Cited Cases | 48,298 |
 | Unique Issues | 86,247 |
@@ -112,38 +112,34 @@ Each record is a triplet **(f, k, c)**:
 
 ![Pipeline](img/pipeline.png)
 
-The pipeline proceeds in five steps:
+The pipeline consists of three main steps:
 
-**Step 0 — Case Index Generation (`00_Generate_Case_Index.py`)**
-Probes eLitigation to enumerate valid judgment URLs across all court types (SGHC, SGCA, SGCAI, SGHCF, SGHCR) for 2000–2025. Outputs a master CSV with columns: `Year, Court_Type, Case_Number, URL, Full_Reference`.
+**Step 1 — Fact Extraction (`03_Fact_Query_Batch.py`)**
+For each judgment, the factual section is located through rule-based heading detection (prioritising headings such as *Facts*, *Background*, *Introduction*, *Dispute*), with a fallback to the first 15 substantial paragraphs. DeepSeek-V3 (T=0.2, max 512 tokens) compresses the raw factual section (~1,034 tokens) into a 2–3 sentence lawyer-style `Fact_Query` (~45 tokens), a 23× compression.
 
-**Step 1 — Citation and Context Extraction (`01_Extract_Cited_Cases_Batch.py`)**
-Playwright + BeautifulSoup extract cited case names and ±5 surrounding paragraphs from eLitigation HTML. No LLM involvement.
+**Step 2 — Citation and Context Extraction (`01_Extract_Cited_Cases_Batch.py`)**
+Playwright + BeautifulSoup extract cited case names and ±5 surrounding paragraphs from eLitigation HTML. Cited case names are identified through styled HTML elements (e.g., `<em>`, `<i>`), validated against Singapore neutral citation patterns. No LLM involvement.
 
-**Step 2 — Citation-Level Principle Extraction (`02_Deepseek_Chat_Batch.py`)**
-DeepSeek-Chat (15-shot, T=0) extracts three fields per citation: (1) Key Principles Illustrated, (2) Issue Group, (3) Issue. Uses `prompt_with_paragraphs_FINAL.txt`.
-
-**Step 3 — Judgment-Level Fact Extraction (`03_Fact_Query_Batch.py`)**
-Three-tier heading fallback strategy locates the Background/Facts section of each judgment. DeepSeek-Chat (T=0.2, max 512 tokens) compresses the scraped section (~1,034 tokens) into a 2–3 sentence lawyer-style `Fact_Query` (~45 tokens), a 23× compression.
-
-**Step 4 — Final Concatenation (`04_Final_Concatenation_Batch.py`)**
-Adds `Case Name` (scraped from eLitigation) and `Current Court Level` (derived from court type). Produces the final dataset CSV.
+**Step 3 — Principle, Issue and Issue Group Extraction (`02_Deepseek_Chat_Batch.py`)**
+DeepSeek-V3 (15-shot, T=0) extracts three fields per citation paragraph: (1) Key Principles Illustrated, (2) Issue Group, (3) Issue.
 
 **Source code:** [`code/extraction/`](code/extraction/)
 
-### LLM Selection (15-shot, n=150 samples)
+### LLM Selection (25 judgments, 725 case–principle pairs; 150 sampled for evaluation)
 
-| Model | Accuracy | Cost/Case |
+| Model | HSS | Cost/Case |
 |---|---|---|
 | Claude Sonnet 4 | 91.3% | $0.24 |
-| **DeepSeek-Chat** | **86.7%** | **$0.02** |
+| **DeepSeek-V3** | **86.7%** | **$0.02** |
 | GPT-4o | 84.7% | $0.16 |
 
-DeepSeek-Chat was selected for full-scale extraction: 12× cost reduction for a 4.6 pp accuracy difference. Total extraction cost: **SGD 100**.
+DeepSeek-V3 was selected for full-scale extraction: 12× cost reduction for a 4.6 pp HSS difference. Total extraction cost: **$78.22**.
 
-### Few-Shot Experiments (DeepSeek-Chat)
+> HSS (Hybrid Similarity Score) is the equally weighted average of ROUGE (lexical overlap) and BERTScore (semantic similarity).
 
-| Examples | Issue | Key Principles |
+### Few-Shot Experiments (DeepSeek-V3)
+
+| Examples | HSS (Issue) | HSS (Key Principles) |
 |---|---|---|
 | 0 (zero-shot) | 74.7% | 86.7% |
 | 5 | 76.7% | 84.7% |
@@ -161,12 +157,11 @@ Citation recommendation is framed as nearest-neighbour retrieval over a Singapor
 
 $$c^* = \arg\max_{c \in \mathcal{C}} \, s(q, c)$$
 
-Three query formulations are evaluated under identical conditions:
+Two query settings are evaluated:
 
 | Setting | Query | Description |
 |---|---|---|
 | **Fact-only** (f → c) | `f` | Facts only; mirrors existing benchmarks |
-| **Principle-only** (k → c) | `k` | Abstract principle only |
 | **Principle-augmented** (f ⊕ k → c) | `[FACT] f [PRINCIPLE] k` | **Proposed formulation** |
 
 ---
@@ -175,7 +170,13 @@ Three query formulations are evaluated under identical conditions:
 
 ### 1. Models Evaluated
 
-**Encoder Models**
+**Conventional Lexical Baseline**
+
+| Model | Type |
+|---|---|
+| BM25 | Lexical retrieval |
+
+**Conventional Pre-trained Language Models**
 
 | Model | Params | Pretraining Corpus |
 |---|---|---|
@@ -185,17 +186,17 @@ Three query formulations are evaluated under identical conditions:
 | Legal-Longformer | 148M | 19GB multi-jurisdictional |
 | Pile-of-Law BERT | 340M | 256GB US-focused legal sources |
 | SAILER† | 110M | 10M+ Chinese judgments |
-| Legal-XLM-LF-base | 208M | 24 EU languages |
 | Legal-English-RoBERTa | 337M | LexFiles multi-jurisdictional |
 
-**Decoder Models**
+**Large-Scale Legal Language Models**
 
 | Model | Params | Pretraining Corpus |
 |---|---|---|
 | AdaptLLM | 7B | US legal + reading comprehension |
 | SaulLM-7B | 7B | US/EU/UK/AU legal data |
 | Lawma-8B | 8B | US legal tasks |
-| SaulLM-54B | 54B MoE | US/EU/UK/AU + DPO alignment |
+
+> **Note:** SaulLM-54B was excluded due to GPU memory constraints. InternLM-Law was excluded due to model unavailability (HTTP 401). Lawyer GPT was excluded as no model weights were publicly released.
 
 > **Jurisdiction gap:** All models were pretrained exclusively on China, US, UK, EU, or Australian legal data — none include Singapore legal text.
 
@@ -209,84 +210,61 @@ $$\mathcal{L} = \frac{1}{2} \left( \mathcal{L}_{k \to c} + \mathcal{L}_{c \to k}
 
 **Data split:** 80/10/10 (train/val/test), split by unique judgment URL to prevent data leakage.
 
-**Parameter settings for encoder fine-tuning:**
-
-| Parameter | Base Models (110M) | Large Models (300M+) |
-|---|---|---|
-| Batch size | 64 | 16–32 (gradient accumulation to effective 32) |
-| Learning rate | 2e-5 | 1e-5 |
-| Temperature τ | 0.07 (learnable) | 0.07 (learnable) |
-| Checkpoint selection | Min. validation loss | Min. validation loss |
-
-**Parameter settings for decoder fine-tuning (QLoRA on A100):**
+**Training parameters:**
 
 | Parameter | Value |
 |---|---|
-| LoRA rank | 16 |
-| LoRA alpha | 32 |
-| Quantisation | 4-bit NF4 |
-| Batch size | 8 (gradient accumulation to effective 32) |
-| Learning rate | 1e-4 |
+| Batch size | 64 |
+| Learning rate | 2e-5 |
+| Temperature τ | 0.07 (learnable) |
+| Checkpoint selection | Min. validation loss |
+| Random seed | 42 |
+
+All experiments conducted on NVIDIA A100 GPUs (80GB).
 
 ### 3. Results
 
-Retrieval performance on SG-LegalCite (1000-way candidate pool, principle-augmented queries):
+Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains (%) are computed against the corresponding fact-only setting for the same model.
 
-**Zero-Shot Performance**
+| Model | Fact-only MRR | Fact-only R@1 | PA MRR | PA R@1 | PA R@5 | PA R@10 | PA R@20 |
+|---|---|---|---|---|---|---|---|
+| *Conventional Lexical* | | | | | | | |
+| BM25 | 1.8 | 0.6 | 3.2 (+79%) | 2.0 (+221%) | 3.5 | 4.7 | 6.6 |
+| *Conventional PLMs* | | | | | | | |
+| SBERT | 10.5 | 4.7 | 20.9 (+99%) | 12.9 (+174%) | 27.8 | 36.3 | 45.8 |
+| Legal-BERT | 6.2 | 2.2 | 14.1 (+128%) | 7.1 (+228%) | 19.6 | 27.5 | 37.5 |
+| Custom Legal-BERT | 6.1 | 2.1 | 9.2 (+51%) | 4.0 (+90%) | 12.4 | 18.9 | 27.4 |
+| Legal-Longformer | 6.8 | 2.6 | 10.0 (+47%) | 4.4 (+69%) | 13.9 | 20.9 | 29.9 |
+| Pile-of-Law BERT | 5.7 | 2.0 | 12.4 (+118%) | 5.8 (+190%) | 17.5 | 25.5 | 35.2 |
+| SAILER† | 0.8 | 0.1 | 0.9 (+13%) | 0.2 (+100%) | 0.6 | 1.2 | 2.0 |
+| Legal-en-RoBERTa | 6.9 | 2.6 | 9.4 (+36%) | 3.8 (+46%) | 13.0 | 20.0 | 29.6 |
+| *Large-scale Legal LMs* | | | | | | | |
+| AdaptLLM | 11.6 | 5.3 | 29.5 (+154%) | 17.9 (+238%) | 41.6 | 53.5 | 64.9 |
+| **SaulLM-7B** | **13.0** | **5.9** | **38.2 (+194%)** | **24.4 (+314%)** | **54.2** | **66.7** | **77.2** |
+| Lawma-8B | 10.0 | 4.0 | 30.5 (+205%) | 18.2 (+355%) | 43.8 | 56.6 | 68.6 |
 
-| Model | MRR | R@1 | R@5 | R@10 | R@20 |
-|---|---|---|---|---|---|
-| *Encoder Models* | | | | | |
-| Legal-BERT | 0.8 | 0.1 | 0.2 | 0.8 | 2.3 |
-| SBERT | **2.5** | **0.8** | **2.7** | **4.8** | **7.8** |
-| Custom Legal-BERT | 0.8 | 0.1 | 0.2 | 0.8 | 2.2 |
-| Legal-Longformer | 0.8 | 0.1 | 0.3 | 0.9 | 2.4 |
-| Pile-of-Law BERT | 0.9 | 0.1 | 0.3 | 1.1 | 2.9 |
-| SAILER† | 0.8 | 0.1 | 0.6 | 1.1 | 2.2 |
-| Legal-en-RoBERTa | 0.8 | 0.1 | 0.3 | 1.2 | 2.8 |
-| *Decoder Models* | | | | | |
-| AdaptLLM | 0.6 | 0.1 | 0.3 | 0.7 | 1.5 |
-| SaulLM-7B | 0.6 | 0.1 | 0.2 | 0.7 | 1.6 |
-| Lawma-8B | 0.6 | 0.0 | 0.2 | 0.5 | 1.5 |
-
-**Fine-Tuned Performance (Principle-Augmented, Δ% = relative improvement over fine-tuned fact-only baseline)**
-
-| Model | MRR | R@1 | R@5 | R@10 | R@20 |
-|---|---|---|---|---|---|
-| *Encoder Models* | | | | | |
-| Legal-BERT | 14.1 (+128%) | 7.1 (+228%) | 19.6 | 27.5 | 37.5 |
-| SBERT | 20.9 (+98%) | 12.9 (+178%) | 27.8 | 36.3 | 45.8 |
-| Custom Legal-BERT | 9.2 (+51%) | 4.0 (+84%) | 12.4 | 18.9 | 27.4 |
-| Legal-Longformer | 10.0 (+47%) | 4.4 (+70%) | 13.9 | 20.9 | 29.9 |
-| Pile-of-Law BERT | 12.4 (+119%) | 5.8 (+193%) | 17.5 | 25.5 | 35.2 |
-| SAILER† | 0.9 (+13%) | 0.2 (+150%) | 0.6 | 1.2 | 2.0 |
-| Legal-en-RoBERTa | 9.4 (+36%) | 3.8 (+43%) | 13.0 | 20.0 | 29.6 |
-| *Decoder Models* | | | | | |
-| AdaptLLM | 29.5 (+154%) | 17.9 (+240%) | 41.6 | 53.5 | 64.9 |
-| **SaulLM-7B** | **38.2 (+193%)** | **24.4 (+317%)** | **54.2** | **66.7** | **77.2** |
-| Lawma-8B | 30.5 (+205%) | 18.2 (+354%) | 43.8 | 56.6 | 68.6 |
-
-> † SAILER's structure-aware pre-training causes embedding collapse on SG legal text; fine-tuning provides no meaningful improvement.
+> PA = Principle-Augmented query setting. † SAILER's structure-aware pre-training causes embedding collapse on SG legal text; fine-tuning provides no meaningful improvement.
 
 ---
 
 ## Key Findings
 
-**1. Principle-augmented queries consistently outperform fact-only baselines** across all architectures (up to +354% relative R@1 improvement), confirming that legal principles provide critical discriminative signal for citation retrieval.
+**1. Large-scale legal language models consistently outperform smaller conventional models** across both query settings. A clear performance hierarchy exists: large-scale legal LMs (e.g., SaulLM-7B) achieve the strongest results, followed by conventional pre-trained language models (e.g., SBERT), with BM25 performing weakest. This suggests legal citation retrieval benefits substantially from both model scale and domain-specific pre-training.
 
-**2. Pre-training objective is a stronger determinant of performance than model scale or corpus size.** Despite a 57× difference in pretraining corpus size (12GB → 689GB), all legal-domain encoders converge to ~94% R@1 after fine-tuning.
+**2. Principle-augmented retrieval consistently outperforms fact-only retrieval** across nearly all models and all model categories — including lexical baselines, conventional PLMs, and large-scale legal LMs. On average, principle-augmented queries improve MRR by 111% and Recall by 124% across all approaches, confirming that explicit legal principles provide strong discriminative signals for citation retrieval.
 
-**3. Standard autoregressive pretraining causes embedding collapse that worsens with scale.** SaulLM-54B (0.2% zero-shot R@1) performs worse than its 7B variant (4.2%) due to more severe embedding collapse (mean pairwise similarity 0.98 vs. 0.95).
+**3. Large-scale legal language models benefit more from principle augmentation than conventional models.** On average, our paradigm improves MRR by 79%, 70%, and 184% across the three model categories respectively. The performance gap widens under principle-augmented queries, indicating that stronger models exploit principle-level semantics more effectively. SaulLM-7B achieves the top scores across all metrics after augmentation.
 
-**4. Reading comprehension pretraining partially bridges the encoder–decoder gap.** AdaptLLM achieves 77.2% zero-shot R@1 — 15.5 pp below Pile-of-Law BERT but far above other decoders — because its multi-task QA pretraining incidentally learns query–document matching.
+**4. SBERT unexpectedly outperforms all legal-specific conventional models.** SBERT consistently surpasses all legal-specific encoders under both query settings, suggesting that domain-specific pre-training does not always transfer well across legal systems. A robust general semantic representation can be more transferable than small legal-specialised models when cross-jurisdiction semantic mismatch is present.
 
-**5. After fine-tuning, encoders and decoders reach comparable peak performance** (~94–95% R@1), but decoders require substantially more compute (7–54B vs. 110–340M parameters).
+**5. Recall@k gains decrease consistently as k increases.** Gains are largest at R@1 and gradually decrease as k increases to 5, 10, and 20 (average gains of 184% → 106% → 80% → 60% for k = 1, 5, 10, 20), indicating that principle-augmented queries are particularly effective at placing the correct cited case at the very top rank.
 
 ---
 
 ## Reproducibility Notes
 
-**Unavailable models:** Two legal LLMs could not be included in our evaluation due to accessibility issues:
+**Unavailable models:** The following models could not be included in the evaluation:
+- **SaulLM-54B**: Excluded due to GPU memory constraints.
 - **InternLM-Law** (`internlm/internlm2-law-7b`): HuggingFace weights returned HTTP 401 errors at time of experiments.
 - **Lawyer GPT**: No publicly released model weights despite the published paper.
 
@@ -299,7 +277,7 @@ These barriers are noted to highlight reproducibility challenges in legal NLP.
 If you use SG-LegalCite in your work, please cite:
 ```bibtex
 @inproceedings{anonymous2026sglegalcite,
-  title  = {SG-LegalCite: A Singapore Legal Principle-Case Dataset for Jurisdiction-Aware Citation Retrieval},
+  title  = {SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law},
   author = {Anonymous Authors},
   year   = {2026}
 }
@@ -316,5 +294,7 @@ Code is released under the MIT License.
 ---
 
 ## Acknowledgements
+
+AI coding assistants (e.g., ChatGPT) were used to support code development for the data extraction pipeline and model training, as well as manuscript polishing. All scientific design, methodology, and analysis are the authors' own work.
 
 Expert validation was conducted by legally qualified annotators from two Singapore law schools. Experiments were run on a university HPC cluster (A100 GPUs).
