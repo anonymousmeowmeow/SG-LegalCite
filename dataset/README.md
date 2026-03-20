@@ -1,6 +1,6 @@
 # Dataset
 
-The dataset files are hosted on HuggingFace: [link coming soon]
+The dataset files are hosted on HuggingFace: https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite
 
 ## Format
 
