@@ -23,61 +23,82 @@ The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–20
 ```
 SG-LegalCite/
 ├── dataset/
-│   └── README.md                  # Dataset format, field descriptions, and download link
+│   └── README.md                                # Dataset format, field descriptions, and download link
 ├── code/
 │   ├── extraction/
-│   │   ├── 00_Generate_Case_Index.py         # Step 0: Generate master case URL index (2000–2025)
-│   │   ├── 01_Extract_Cited_Cases_Batch.py   # Step 1: Extract cited cases + paragraph context
-│   │   ├── 02_Deepseek_Chat_Batch.py         # Step 2: Extract Key Principles, Issue, Issue Group
-│   │   ├── 03_Fact_Query_Batch.py            # Step 3: Generate lawyer-style Fact_Query summaries
-│   │   ├── 04_Final_Concatenation_Batch.py   # Step 4: Add Case Name + Precedential Weight
-│   │   ├── Scrape Cited Case Judgements Pipeline.py  # Scrape full judgment text for cited cases
-│   │   ├── prompt_with_paragraphs_FINAL.txt  # 15-shot DeepSeek extraction prompt
+│   │   ├── 00_Generate_Case_Index.py            # Step 0: Generate master case URL index (2000–2025)
+│   │   ├── 01_Extract_Cited_Cases_Batch.py      # Step 1: Extract cited cases + paragraph context
+│   │   ├── 02_Deepseek_Chat_Batch.py            # Step 2: Extract Key Principles, Issue, Issue Group
+│   │   ├── 03_Fact_Query_Batch.py               # Step 3: Generate lawyer-style Fact_Query summaries
+│   │   ├── 04_Final_Concatenation_Batch.py      # Step 4: Add Case Name + Precedential Weight
+│   │   ├── Scrape Cited Case Judgements Pipeline.py    # Scrape full judgment text for cited cases
+│   │   ├── prompt_with_paragraphs_FINAL.txt     # 15-shot DeepSeek extraction prompt
 │   │   ├── LLM_Selection/
-│   │       ├── LLM_Selection_KeyPrinciples_All_Models.ipynb  # LLM comparison evaluation notebook
-│   │       ├── LLM_Selection_KeyPrinciples_Results.xlsx      # Accuracy summary (Claude/DeepSeek/GPT-4o)
-│   │       ├── Claude Sonnet 4_individual_key_principle_extraction_results/
-│   │       ├── DeepSeek-V3_individual_key_principle_extraction_results/
-│   │       └── GPT-4o_individual_key_principle_extraction_results/
+│   │   │   ├── LLM_Selection_KeyPrinciples_All_Models.ipynb    # LLM comparison evaluation notebook
+│   │   │   ├── LLM_Selection_KeyPrinciples_Results.xlsx        # Accuracy summary (Claude/DeepSeek/GPT-4o)
+│   │   │   ├── Claude Sonnet 4_individual_key_principle_extraction_results/
+│   │   │   ├── DeepSeek-V3_individual_key_principle_extraction_results/
+│   │   │   └── GPT-4o_individual_key_principle_extraction_results/
 │   │   └── Few-Shot Experiments (DeepSeek-Chat)/
-│   │       ├── FewShot_Experiments_DeepSeek.ipynb            # Few-shot evaluation notebook
-│   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx      # Accuracy summary (0/5/10/15/20-shot)
+│   │       ├── FewShot_Experiments_DeepSeek.ipynb              # Few-shot evaluation notebook
+│   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx        # Accuracy summary (0/5/10/15/20-shot)
 │   │       └── {Zero,5,10,15,20}-Shot_individual_*_extraction_results/
-│   ├── retrieval/
-│   │   ├── generate_stage2_direct_pools_v2.py        # Pool generation: fact-only baseline
-│   │   ├── generate_stage2_single_stage_pools_v2.py  # Pool generation: principle-augmented
-│   │   ├── sbert_direct_v2v5.py                      # SBERT (fact-only)
-│   │   ├── sbert_single_stage_v1.py                  # SBERT (principle-augmented)
-│   │   ├── customlegalbert_*.py                      # Custom Legal-BERT (both settings)
-│   │   ├── longformer_*.py                           # Legal-Longformer (both settings)
-│   │   ├── pileoflaw_*.py                            # Pile-of-Law BERT (both settings)
-│   │   ├── roberta_large_*.py                        # Legal-English-RoBERTa (both settings)
-│   │   ├── sailer_*.py                               # SAILER (both settings)
-│   │   ├── adaptllm_*.py                             # AdaptLLM (both settings)
-│   │   ├── legalbert_*.py                            # Legal-BERT (both settings)
-│   │   ├── saullm_*.py                               # SaulLM-7B (both settings)
-│   │   ├── lawma_*.py                                # Lawma-8B (both settings)
-│   │   └── run_*.pbs                                 # PBS job scripts for HPC cluster
-│   └── ablations/
-│       ├── generate_stage2_fact_issue_pools_v1.py        # Field granularity: fact + issue pools
-│       ├── generate_stage2_fact_issue_group_pools_v1.py  # Field granularity: fact + issue_group pools
-│       ├── generate_stage2_all_fields_pools_v3.py        # Field granularity: fact + all fields pools
-│       ├── generate_stage2_paragraph_pools_v2.py         # Context ablation: scrubbed ±200-word window
-│       ├── 06_Build_Scrubbed_Paragraph_Window.ipynb      # Context ablation: notebook for scrubbing
-│       ├── sbert_fact_issue_v1.py                        # SBERT field granularity (issue)
-│       ├── sbert_fact_issue_group_v1.py                  # SBERT field granularity (issue group)
-│       ├── sbert_all_fields_v2.py                        # SBERT field granularity (all fields)
-│       ├── sbert_paragraph_v11.py                        # SBERT context ablation (scrubbed window)
-│       ├── saullm_fact_issue_v1.py                       # SaulLM-7B field granularity (issue)
-│       ├── saullm_fact_issue_group_v1.py                 # SaulLM-7B field granularity (issue group)
-│       ├── saullm_all_fields_v17.py                      # SaulLM-7B field granularity (all fields)
-│       ├── saullm_paragraph_v5.py                        # SaulLM-7B context ablation (scrubbed window)
-│       └── run_coldstart_experiment_v4.py                # Cold-start: DeepSeek predicts principle from facts
+│   │
+│   ├── retrieval/                               # Main results — fact-only vs principle-augmented
+│   │   ├── generate_stage2_direct_pools_v2.py           # Pool generation: fact-only baseline
+│   │   ├── generate_stage2_single_stage_pools_v2.py     # Pool generation: principle-augmented
+│   │   ├── sbert_direct_v2v5.py                         # SBERT (fact-only)
+│   │   ├── sbert_single_stage_v1.py                     # SBERT (principle-augmented)
+│   │   ├── customlegalbert_*.py                         # Custom Legal-BERT (both settings)
+│   │   ├── longformer_*.py                              # Legal-Longformer (both settings)
+│   │   ├── pileoflaw_*.py                               # Pile-of-Law BERT (both settings)
+│   │   ├── roberta_large_*.py                           # Legal-English-RoBERTa (both settings)
+│   │   ├── sailer_*.py                                  # SAILER (both settings)
+│   │   ├── adaptllm_*.py                                # AdaptLLM (both settings)
+│   │   ├── legalbert_*.py                               # Legal-BERT (both settings)
+│   │   ├── saullm_*.py                                  # SaulLM-7B (both settings)
+│   │   ├── lawma_*.py                                   # Lawma-8B (both settings)
+│   │   └── run_*.pbs                                    # PBS job scripts for HPC cluster
+│   │
+│   ├── Field Granularity Ablation/              # Section 5.3 — fact + {issue, issue_group, all fields}
+│   │   ├── generate_stage2_fact_issue_pools_v1.py
+│   │   ├── generate_stage2_fact_issue_group_pools_v1.py
+│   │   ├── generate_stage2_all_fields_pools_v3.py
+│   │   ├── run_generate_fact_issue_pools_v1.pbs
+│   │   ├── run_generate_fact_issue_group_pools_v1.pbs
+│   │   ├── run_generate_all_fields_pools_v3.pbs
+│   │   ├── sbert_fact_issue_v1.py
+│   │   ├── sbert_fact_issue_group_v1.py
+│   │   ├── sbert_all_fields_v2.py
+│   │   ├── saullm_fact_issue_v1.py
+│   │   ├── saullm_fact_issue_group_v1.py
+│   │   ├── saullm_all_fields_v17.py
+│   │   ├── run_sbert_fact_issue_v1.pbs
+│   │   ├── run_sbert_fact_issue_group_v1.pbs
+│   │   ├── run_sbert_all_fields_v2.pbs
+│   │   ├── run_saullm_fact_issue_v1.pbs
+│   │   ├── run_saullm_fact_issue_group_v1.pbs
+│   │   └── run_saullm_all_fields_v17.pbs
+│   │
+│   ├── Context Ablation/                        # Section 5.4 — scrubbed ±200-word citation window
+│   │   ├── 06_Build_Scrubbed_Paragraph_Window.ipynb     # Notebook: build scrubbed window CSV
+│   │   ├── generate_stage2_paragraph_pools_v2.py        # Pool generation: paragraph-augmented
+│   │   ├── run_generate_stage2_paragraph_pools_v2.pbs
+│   │   ├── sbert_paragraph_v11.py                       # SBERT with scrubbed paragraph
+│   │   ├── saullm_paragraph_v5.py                       # SaulLM-7B with scrubbed paragraph
+│   │   ├── run_sbert_paragraph_v11.pbs
+│   │   └── run_saullm_paragraph_v5.pbs
+│   │
+│   └── Cold-Start Evaluation/                   # Section 5.5 — DeepSeek-predicted principle
+│       ├── run_coldstart_experiment_v4.py               # DeepSeek principle predictor + SaulLM eval
+│       └── run_coldstart_experiment_v4.pbs
+│
 ├── img/
-│   ├── pipeline.png               # Dataset construction pipeline figure
-│   ├── legal_hierarchy.png        # Legal citation conceptual structure
-│   └── legal_hierarchy2.png       # Knowledge graph structure
+│   ├── pipeline.png                             # Dataset construction pipeline figure
+│   ├── legal_hierarchy.png                      # Legal citation conceptual structure
+│   └── legal_hierarchy2.png                     # Knowledge graph structure
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
@@ -259,7 +280,7 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains 
 
 ### 4. Field Granularity Ablation
 
-**Source code:** [`code/ablations/`](code/ablations/)
+**Source code:** [`code/Field Granularity Ablation/`](code/Field%20Granularity%20Ablation/)
 
 To test whether the principle field is uniquely informative or whether any structured legal field would help equally, we evaluate five query settings on identical candidate pools (1 gold + 999 random negatives, 9,979 pools per setting):
 
@@ -275,6 +296,8 @@ To test whether the principle field is uniquely informative or whether any struc
 
 ### 5. Context Ablation
 
+**Source code:** [`code/Context Ablation/`](code/Context%20Ablation/)
+
 To test whether principle gains reflect doctrinal modelling rather than richer text, we compare LLM-extracted principles against a **scrubbed ±200-word citation window** (case names, neutral citations, judge names removed; residual identifiability <0.05%), truncated to match the principle's word count per row.
 
 | Query Setting | SBERT MRR | SaulLM-7B MRR |
@@ -286,6 +309,8 @@ To test whether principle gains reflect doctrinal modelling rather than richer t
 **Key takeaway:** At matched text budget, principles consistently outperform scrubbed context. The advantage is especially pronounced for SaulLM-7B (+102% MRR over context), showing the principle extraction step captures genuine doctrinal signal beyond what raw citation-proximal text provides.
 
 ### 6. Cold-Start Evaluation
+
+**Source code:** [`code/Cold-Start Evaluation/`](code/Cold-Start%20Evaluation/)
 
 To test whether the paradigm works without the oracle principle, we use DeepSeek-V3 to predict the legal principle from facts alone (case names disallowed; contamination screen applied), then evaluate the same fine-tuned SaulLM-7B on 50 sampled pools.
 
