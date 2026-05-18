@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -N gen_all_fields_v3
+#PBS -l select=1:ncpus=4:ngpus=0:mem=32gb
+#PBS -l walltime=01:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o generate_all_fields_pools_v3.log
+
+echo "=========================================="
+echo "SG-LegalCite: Generate All-Fields Pools V3"
+echo "Task: [FACT] Fact [ISSUE_GROUP] Issue Group [ISSUE] Issue [PRINCIPLE] Principle → Cited Case"
+echo "Pool: 1 correct case + 999 random negatives"
+echo "One pool per (fact, issue_group, issue, principle, cited_case) tuple"
+echo "Ground truth fields used directly (no Stage 1)"
+echo "Started: $(date)"
+echo "=========================================="
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python generate_stage2_all_fields_pools_v3.py
+
+echo "Finished: $(date)"

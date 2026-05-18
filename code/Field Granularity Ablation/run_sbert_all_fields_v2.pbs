@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -N sbert_all_fields_v2
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=100:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o sbert_all_fields_v2.log
+
+echo "============================================================"
+echo "SBERT All Fields Ablation v2 (1 GPU)"
+echo "------------------------------------------------------------"
+echo "Task:    [FACT] Facts + [ISSUE_GROUP] Issue Group + [ISSUE] Issue + [PRINCIPLE] Principle -> Cited Case"
+echo "Model:   sentence-transformers/all-mpnet-base-v2"
+echo "Pool:    stage2_all_fields_pools_v3.json (9979 pools)"
+echo "Split:   By URL (identical to all other models)"
+echo "Batch:   64 | Epochs: 10 | LR: 2e-5 | Warmup: 0.1"
+echo "GPU:     1x A100"
+echo "Parts:   Zero-Shot eval -> Fine-Tuning -> Fine-Tuned eval"
+echo "v2:      removed in-script pip install (was pulling triton 3.6 and breaking torch)"
+echo ""
+echo "Purpose: Reviewer 3 ablation — compare against single-stage (fact+principle)."
+echo "Started: $(date)"
+echo "============================================================"
+
+cd $PBS_O_WORKDIR
+echo "Working dir: $(pwd)"
+echo ""
+
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo ""
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python sbert_all_fields_v2.py
+
+echo ""
+echo "============================================================"
+echo "Finished: $(date)"
+echo "============================================================"

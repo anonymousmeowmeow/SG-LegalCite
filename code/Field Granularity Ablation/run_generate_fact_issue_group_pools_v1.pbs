@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -N gen_fact_issue_group_v1
+#PBS -l select=1:ncpus=4:ngpus=0:mem=32gb
+#PBS -l walltime=01:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o generate_fact_issue_group_pools_v1.log
+
+echo "=========================================="
+echo "SG-LegalCite: Generate Fact+Issue Group Pools V1"
+echo "Task: [FACT] Fact [ISSUE_GROUP] Issue Group → Cited Case"
+echo "Pool: 1 correct case + 999 random negatives"
+echo "Dedup: (fact, principle, cited_case) — matches single_stage_pools"
+echo "Started: $(date)"
+echo "=========================================="
+
+cd $PBS_O_WORKDIR
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python generate_stage2_fact_issue_group_pools_v1.py
+
+echo "Finished: $(date)"
