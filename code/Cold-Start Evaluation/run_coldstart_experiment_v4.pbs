@@ -1,0 +1,53 @@
+#!/bin/bash
+#PBS -N coldstart_experiment_v4
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=02:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o coldstart_experiment.log
+#PBS -v DEEPSEEK_API_KEY
+
+echo "============================================================"
+echo "SG-LegalCite Cold-Start Experiment v4 (1 GPU, eval only)"
+echo "------------------------------------------------------------"
+echo "Pipeline:"
+echo "  1. Sample 50 test pools (seed=42)"
+echo "  2. DeepSeek-V3 predicts principles from facts only"
+echo "  3. Load fine-tuned SaulLM-7B from"
+echo "     ./citation_rec_saullm_single_stage_v1/"
+echo "  4. Evaluate same model on same 50 pools under THREE conditions:"
+echo "       - Fact-only:  [FACT] fact"
+echo "       - Cold-start: [FACT] fact [PRINCIPLE] predicted_principle"
+echo "       - Gold:       [FACT] fact [PRINCIPLE] gold_principle"
+echo "  5. Output three-way MRR/R@k comparison"
+echo ""
+echo "Purpose: Address Reviewer 3 'oracle principle' / cold-start concern"
+echo "Started: $(date)"
+echo "============================================================"
+
+cd $PBS_O_WORKDIR
+echo "Working dir: $(pwd)"
+echo ""
+
+# DeepSeek API key is loaded from $DEEPSEEK_API_KEY environment variable.
+# Before submitting this job, set it in your shell:
+#   export DEEPSEEK_API_KEY="sk-..."
+# Then qsub will propagate it to the job environment.
+
+# ============================================================
+# GPU CHECK
+# ============================================================
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo ""
+
+# ============================================================
+# RUN
+# ============================================================
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python run_coldstart_experiment_v4.py
+
+echo ""
+echo "============================================================"
+echo "Finished: $(date)"
+echo "============================================================"
