@@ -42,40 +42,37 @@ SG-LegalCite/
 │   │   └── Few-Shot Experiments (DeepSeek-Chat)/
 │   │       ├── FewShot_Experiments_DeepSeek.ipynb            # Few-shot evaluation notebook
 │   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx      # Accuracy summary (0/5/10/15/20-shot)
-│   │       ├── Zero-Shot_individual_issue_extraction_results/
-│   │       ├── Zero-Shot_individual_keyprinciple_extraction_results/
-│   │       ├── 5-Shot_individual_issue_extraction_results/
-│   │       ├── 5-Shot_individual_keyprinciple_extraction_results/
-│   │       ├── 10-Shot_individual_issue_extraction_results/
-│   │       ├── 10-Shot_individual_keyprinciple_extraction_results/
-│   │       ├── 15-Shot_individual_issue_extraction_results/
-│   │       ├── 15-Shot_individual_keyprinciple_extraction_results/
-│   │       ├── 20-Shot_individual_issue_extraction_results/
-│   │       └── 20-Shot_individual_keyprinciple_extraction_results/
+│   │       └── {Zero,5,10,15,20}-Shot_individual_*_extraction_results/
 │   ├── retrieval/
 │   │   ├── generate_stage2_direct_pools_v2.py        # Pool generation: fact-only baseline
 │   │   ├── generate_stage2_single_stage_pools_v2.py  # Pool generation: principle-augmented
 │   │   ├── sbert_direct_v2v5.py                      # SBERT (fact-only)
 │   │   ├── sbert_single_stage_v1.py                  # SBERT (principle-augmented)
-│   │   ├── customlegalbert_direct_v1.py               # Custom Legal-BERT (fact-only)
-│   │   ├── customlegalbert_single_stage_v1.py        # Custom Legal-BERT (principle-augmented)
-│   │   ├── longformer_direct_v1.py                   # Legal-Longformer (fact-only)
-│   │   ├── longformer_single_stage_v1.py             # Legal-Longformer (principle-augmented)
-│   │   ├── pileoflaw_direct_v1.py                    # Pile-of-Law BERT (fact-only)
-│   │   ├── pileoflaw_single_stage_v2.py              # Pile-of-Law BERT (principle-augmented)
-│   │   ├── roberta_large_direct_v1.py                # Legal-English-RoBERTa (fact-only)
-│   │   ├── roberta_large_single_stage_v1.py          # Legal-English-RoBERTa (principle-augmented)
-│   │   ├── sailer_direct_v1.py                       # SAILER (fact-only)
-│   │   ├── sailer_single_stage_v1.py                 # SAILER (principle-augmented)
-│   │   ├── adaptllm_direct_v1.py                     # AdaptLLM (fact-only)
-│   │   ├── adaptllm_single_stage_v2.py               # AdaptLLM (principle-augmented)
-│   │   ├── legalbert_stage2_direct_v2.py             # Legal-BERT (fact-only)
-│   │   ├── legalbert_single_stage.py                 # Legal-BERT (principle-augmented)
-│   │   ├── saullm_direct_v2.py                       # SaulLM-7B (fact-only)
-│   │   ├── saullm_single_stage_v1.py                 # SaulLM-7B (principle-augmented)
-│   │   ├── lawma_direct_v3.py                        # Lawma-8B (fact-only)
-│   │   ├── lawma_single_stage_v2.py                  # Lawma-8B (principle-augmented)
+│   │   ├── customlegalbert_*.py                      # Custom Legal-BERT (both settings)
+│   │   ├── longformer_*.py                           # Legal-Longformer (both settings)
+│   │   ├── pileoflaw_*.py                            # Pile-of-Law BERT (both settings)
+│   │   ├── roberta_large_*.py                        # Legal-English-RoBERTa (both settings)
+│   │   ├── sailer_*.py                               # SAILER (both settings)
+│   │   ├── adaptllm_*.py                             # AdaptLLM (both settings)
+│   │   ├── legalbert_*.py                            # Legal-BERT (both settings)
+│   │   ├── saullm_*.py                               # SaulLM-7B (both settings)
+│   │   ├── lawma_*.py                                # Lawma-8B (both settings)
 │   │   └── run_*.pbs                                 # PBS job scripts for HPC cluster
+│   └── ablations/
+│       ├── generate_stage2_fact_issue_pools_v1.py        # Field granularity: fact + issue pools
+│       ├── generate_stage2_fact_issue_group_pools_v1.py  # Field granularity: fact + issue_group pools
+│       ├── generate_stage2_all_fields_pools_v3.py        # Field granularity: fact + all fields pools
+│       ├── generate_stage2_paragraph_pools_v2.py         # Context ablation: scrubbed ±200-word window
+│       ├── 06_Build_Scrubbed_Paragraph_Window.ipynb      # Context ablation: notebook for scrubbing
+│       ├── sbert_fact_issue_v1.py                        # SBERT field granularity (issue)
+│       ├── sbert_fact_issue_group_v1.py                  # SBERT field granularity (issue group)
+│       ├── sbert_all_fields_v2.py                        # SBERT field granularity (all fields)
+│       ├── sbert_paragraph_v11.py                        # SBERT context ablation (scrubbed window)
+│       ├── saullm_fact_issue_v1.py                       # SaulLM-7B field granularity (issue)
+│       ├── saullm_fact_issue_group_v1.py                 # SaulLM-7B field granularity (issue group)
+│       ├── saullm_all_fields_v17.py                      # SaulLM-7B field granularity (all fields)
+│       ├── saullm_paragraph_v5.py                        # SaulLM-7B context ablation (scrubbed window)
+│       └── run_coldstart_experiment_v4.py                # Cold-start: DeepSeek predicts principle from facts
 ├── img/
 │   ├── pipeline.png               # Dataset construction pipeline figure
 │   ├── legal_hierarchy.png        # Legal citation conceptual structure
@@ -91,12 +88,12 @@ SG-LegalCite/
 | Attribute | Value |
 |---|---|
 | Time Span | 2000–2025 |
-| Unique Judgments | 8,494 |
-| Case–Principle Pairs | 100,554 |
-| Unique Principles | 72,264 |
-| Unique Cited Cases | 48,298 |
-| Unique Issues | 86,247 |
-| Unique Issue Groups | 9,712 |
+| Unique Judgments | 8,523 |
+| Case–Principle Pairs | 100,890 |
+| Unique Principles | 72,500 |
+| Unique Cited Cases | 48,478 |
+| Unique Issues | 86,519 |
+| Unique Issue Groups | 9,748 |
 | Avg. Raw Fact Length | 1,034.4 tokens |
 | Avg. Fact Length (post-summary) | 45.1 tokens |
 | Avg. Citation Paragraph Length | 1,100.5 tokens |
@@ -106,6 +103,8 @@ Each record is a triplet **(f, k, c)**:
 - **f** — Factual background of the citing judgment (LLM-summarised to ~45 tokens)
 - **k** — Legal principle for which the precedent is cited
 - **c** — Cited Singapore Supreme Court case
+
+Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 with the Singapore neutral citation (`Judgment_Reference`) of the citing judgment (e.g., `https://www.elitigation.sg/gd/s/2023_SGCA_15` ↔ `[2023] SGCA 15`).
 
 ---
 
@@ -149,6 +148,18 @@ DeepSeek-V3 was selected for full-scale extraction: 12× cost reduction for a 4.
 | 20 | 79.3% | 86.7% |
 
 15-shot standardised for all extractions.
+
+### Expert Validation
+
+Three legal experts independently rated 131 case-principle pairs from 15 randomly sampled judgments on a 5-point scale across three dimensions:
+
+| Dimension | Mean | σ |
+|---|---|---|
+| Key Principles Illustrated | 3.22 | 1.10 |
+| Issue | 3.93 | 0.98 |
+| Issue Group | 4.28 | 0.99 |
+
+Inter-rater agreement: **ICC(2,k) = 0.54** (moderate). The same three annotators also rated Claude Sonnet 4 extractions blind, with Claude scoring +13.4% / +10.7% / +4.9% across the three dimensions. DeepSeek-V3 was retained for its 12× cost advantage.
 
 ---
 
@@ -223,7 +234,7 @@ $$\mathcal{L} = \frac{1}{2} \left( \mathcal{L}_{k \to c} + \mathcal{L}_{c \to k}
 
 All experiments conducted on NVIDIA A100 GPUs (80GB).
 
-### 3. Results
+### 3. Main Results
 
 Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains (%) are computed against the corresponding fact-only setting for the same model.
 
@@ -246,6 +257,46 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains 
 
 > PA = Principle-Augmented query setting. † SAILER's structure-aware pre-training causes embedding collapse on SG legal text; fine-tuning provides no meaningful improvement.
 
+### 4. Field Granularity Ablation
+
+**Source code:** [`code/ablations/`](code/ablations/)
+
+To test whether the principle field is uniquely informative or whether any structured legal field would help equally, we evaluate five query settings on identical candidate pools (1 gold + 999 random negatives, 9,979 pools per setting):
+
+| Query Setting | SBERT MRR | SaulLM-7B MRR |
+|---|---|---|
+| Fact-only | 10.5 | 13.0 |
+| Fact + Issue Group | 19.4 (+85%) | 17.5 (+35%) |
+| Fact + Issue | 20.8 (+98%) | 36.3 (+179%) |
+| Fact + Principle | 20.9 (+99%) | **38.2 (+194%)** |
+| Fact + All Fields | **26.3 (+151%)** | 34.8 (+168%) |
+
+**Key takeaway:** Granularity interacts with model capacity. SaulLM-7B exploits fine-grained doctrinal precision (issue, principle) but barely benefits from the coarse issue group (+35% MRR). SBERT gains comparable benefit from any single doctrinal field. Principle remains the strongest single-field augmentation for SaulLM-7B.
+
+### 5. Context Ablation
+
+To test whether principle gains reflect doctrinal modelling rather than richer text, we compare LLM-extracted principles against a **scrubbed ±200-word citation window** (case names, neutral citations, judge names removed; residual identifiability <0.05%), truncated to match the principle's word count per row.
+
+| Query Setting | SBERT MRR | SaulLM-7B MRR |
+|---|---|---|
+| Fact-only | 10.5 | 13.0 |
+| Fact + Context (scrubbed) | 18.1 (+72%) | 18.9 (+45%) |
+| **Fact + Principle** | **20.9 (+99%)** | **38.2 (+194%)** |
+
+**Key takeaway:** At matched text budget, principles consistently outperform scrubbed context. The advantage is especially pronounced for SaulLM-7B (+102% MRR over context), showing the principle extraction step captures genuine doctrinal signal beyond what raw citation-proximal text provides.
+
+### 6. Cold-Start Evaluation
+
+To test whether the paradigm works without the oracle principle, we use DeepSeek-V3 to predict the legal principle from facts alone (case names disallowed; contamination screen applied), then evaluate the same fine-tuned SaulLM-7B on 50 sampled pools.
+
+| Setting | MRR | R@1 |
+|---|---|---|
+| Fact-only | 17.1 | 10.0 |
+| Cold-start (predicted principle) | 21.9 (+28%) | 14.0 (+40%) |
+| **Gold (oracle principle)** | **49.5 (+190%)** | **36.0 (+260%)** |
+
+**Key takeaway:** The principle-augmented paradigm provides real benefit even when principles must be predicted from facts alone. The cold-start vs gold gap indicates clear headroom for improvement via fine-tuned principle predictors or lawyer-in-the-loop refinement.
+
 ---
 
 ## Key Findings
@@ -256,9 +307,15 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains 
 
 **3. Large-scale legal language models benefit more from principle augmentation than conventional models.** On average, our paradigm improves MRR by 79%, 70%, and 184% across the three model categories respectively. The performance gap widens under principle-augmented queries, indicating that stronger models exploit principle-level semantics more effectively. SaulLM-7B achieves the top scores across all metrics after augmentation.
 
-**4. SBERT unexpectedly outperforms all legal-specific conventional models.** SBERT consistently surpasses all legal-specific encoders under both query settings, suggesting that domain-specific pre-training does not always transfer well across legal systems. A robust general semantic representation can be more transferable than small legal-specialised models when cross-jurisdiction semantic mismatch is present.
+**4. SBERT unexpectedly outperforms all legal-specific conventional models.** SBERT consistently surpasses all legal-specific encoders under both query settings. Several factors plausibly contribute: SBERT's contrastive sentence-similarity pretraining is already retrieval-aligned (whereas legal encoders use masked language modelling); pretraining corpus differences (SAILER on Chinese legal text; others on US/UK/EU corpora) limit Singapore transfer; and these factors compound with cross-jurisdiction doctrinal mismatch.
 
 **5. Recall@k gains decrease consistently as k increases.** Gains are largest at R@1 and gradually decrease as k increases to 5, 10, and 20 (average gains of 184% → 106% → 80% → 60% for k = 1, 5, 10, 20), indicating that principle-augmented queries are particularly effective at placing the correct cited case at the very top rank.
+
+**6. Granularity × model capacity interaction (field ablation).** SaulLM-7B benefits enormously from precise doctrinal fields (issue: +179% MRR, principle: +194%) but barely from the coarse issue group (+35%); SBERT gains comparable benefit from any single doctrinal field. Capable models exploit fine-grained doctrinal precision that weaker encoders cannot leverage.
+
+**7. Principles capture doctrinal signal beyond raw citation text (context ablation).** At matched text budget, LLM-extracted principles outperform a scrubbed ±200-word citation window by +15% MRR (SBERT) and +102% MRR (SaulLM-7B), demonstrating that the extraction step adds genuine value.
+
+**8. The paradigm is robust to cold-start deployment.** Without an oracle principle, DeepSeek-V3-predicted principles still yield +28% MRR over fact-only retrieval, showing the paradigm provides real benefit even in realistic lawyer-driven workflows.
 
 ---
 
