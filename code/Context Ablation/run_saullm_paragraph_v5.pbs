@@ -1,0 +1,40 @@
+#!/bin/bash
+#PBS -N saullm_paragraph_v5
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=100:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o saullm_paragraph_v5.log
+
+echo "============================================================"
+echo "SaulLM-7B Paragraph-Augmented Ablation v5 (1 GPU)"
+echo "------------------------------------------------------------"
+echo "Task:    [FACT] Facts + [PARAGRAPH] Scrubbed Paragraph (TOKEN-MATCHED) -> Cited Case"
+echo "Model:   Equall/Saul-Instruct-v1 (4-bit QLoRA)"
+echo "Pool:    stage2_paragraph_pools_v2.json (9979 pools)"
+echo "Split:   By URL (identical to SaulLM single-stage)"
+echo "Batch:   16 | Epochs: 10 | LR: 2e-5 | Warmup: 0.1"
+echo "GPU:     1x A100 80GB"
+echo "Parts:   Zero-Shot eval -> Fine-Tuning -> Fine-Tuned eval"
+echo "v5:      batch 16 (v3/v4 OOM at batch 64 on 1 GPU)"
+echo "         token-matched truncation + device_map={'': 0}"
+echo ""
+echo "Purpose: Reviewer 3 ablation — fair comparison at equal text budget."
+echo "Started: $(date)"
+echo "============================================================"
+
+cd $PBS_O_WORKDIR
+echo "Working dir: $(pwd)"
+echo ""
+
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo ""
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python saullm_paragraph_v5.py
+
+echo ""
+echo "============================================================"
+echo "Finished: $(date)"
+echo "============================================================"

@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -N sbert_paragraph_v11
+#PBS -l select=1:ncpus=4:ngpus=1:mem=32gb
+#PBS -l walltime=100:00:00
+#PBS -q a100q
+#PBS -j oe
+#PBS -o sbert_paragraph_v11.log
+
+echo "============================================================"
+echo "SBERT Paragraph-Augmented Ablation v11 (1 GPU)"
+echo "------------------------------------------------------------"
+echo "Task:    [FACT] Facts + [PARAGRAPH] Scrubbed Paragraph (TOKEN-MATCHED) -> Cited Case"
+echo "Model:   sentence-transformers/all-mpnet-base-v2"
+echo "Pool:    stage2_paragraph_pools_v2.json (9979 pools)"
+echo "Split:   By URL (identical to all other models)"
+echo "Batch:   32 | Epochs: 10 | LR: 2e-5 | Warmup: 0.1"
+echo "GPU:     1x A100"
+echo "Parts:   Zero-Shot eval -> Fine-Tuning -> Fine-Tuned eval"
+echo "v11:     token-matched truncation + batch 32 (v8/v10 OOM at batch 64)"
+echo ""
+echo "Purpose: Reviewer 3 ablation — fair comparison at equal text budget."
+echo "Started: $(date)"
+echo "============================================================"
+
+cd $PBS_O_WORKDIR
+echo "Working dir: $(pwd)"
+echo ""
+
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv
+echo ""
+
+singularity exec --nv /app/singularity/images/pytorch_25.01-py3.sif \
+    python sbert_paragraph_v11.py
+
+echo ""
+echo "============================================================"
+echo "Finished: $(date)"
+echo "============================================================"
