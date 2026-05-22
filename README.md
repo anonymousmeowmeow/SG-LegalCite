@@ -119,7 +119,9 @@ SG-LegalCite/
 
 ## Data Schema
 
-![Data Schema](img/legal_hierarchy_combined.png)
+<p align="center">
+  <img src="img/legal_hierarchy_combined.png" alt="Data Schema" width="400">
+</p>
 
 Each judgment contributes one shared **Fact** field and refers to multiple individual citations, each associated with its own **Key Principle**, **Cited Case**, **Issue**, and **Issue Group**. The hierarchy reflects the process of legal reasoning: facts describe the dispute as a whole, while individual citations are invoked for legal principles relevant to particular aspects of that dispute.
 
@@ -190,7 +192,9 @@ The corpus is **not artificially balanced** across domains. SG-LegalCite is inte
 
 ## Dataset Construction Pipeline
 
-![Pipeline](img/Pipeline.png)
+<p align="center">
+  <img src="img/Pipeline.png" alt="Pipeline" width="400">
+</p>
 
 The pipeline consists of three main steps:
 
