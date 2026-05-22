@@ -1,107 +1,3 @@
-# SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law
-
-> **Paper:** *SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law*
->
-> **Dataset:** [HuggingFace](https://huggingface.co/datasets/anonymousmeowmeow/SG-LegalCite) | **Paper:** [[arXiv / ACL Anthology link]](#)
-
----
-
-## Overview
-
-SG-LegalCite is the **first legal citation retrieval benchmark for Singapore law** and the **first benchmark with principle-level query annotations** across all existing legal retrieval datasets.
-
-Legal citation recommendation in common-law practice requires retrieving precedents that establish a specific **legal principle** — not merely cases with similar facts. SG-LegalCite operationalises this by formulating retrieval as:
-
-> **[FACT]** *case facts* + **[PRINCIPLE]** *legal principle* → *cited case*
-
-The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–2025) using a cost-effective LLM pipeline validated by legal experts from two Singapore law schools.
-
----
-
-## Repository Structure
-
-```
-SG-LegalCite/
-├── dataset/
-│   └── README.md                                # Dataset format, field descriptions, and download link
-├── code/
-│   ├── extraction/
-│   │   ├── 00_Generate_Case_Index.py            # Step 0: Generate master case URL index (2000–2025)
-│   │   ├── 01_Extract_Cited_Cases_Batch.py      # Step 1: Extract cited cases + paragraph context
-│   │   ├── 02_Deepseek_Chat_Batch.py            # Step 2: Extract Key Principles, Issue, Issue Group
-│   │   ├── 03_Fact_Query_Batch.py               # Step 3: Generate lawyer-style Fact_Query summaries
-│   │   ├── 04_Final_Concatenation_Batch.py      # Step 4: Add Case Name + Precedential Weight
-│   │   ├── Scrape Cited Case Judgements Pipeline.py    # Scrape full judgment text for cited cases
-│   │   ├── prompt_with_paragraphs_FINAL.txt     # 15-shot DeepSeek extraction prompt
-│   │   ├── LLM_Selection/
-│   │   │   ├── LLM_Selection_KeyPrinciples_All_Models.ipynb    # LLM comparison evaluation notebook
-│   │   │   ├── LLM_Selection_KeyPrinciples_Results.xlsx        # Accuracy summary (Claude/DeepSeek/GPT-4o)
-│   │   │   ├── Claude Sonnet 4_individual_key_principle_extraction_results/
-│   │   │   ├── DeepSeek-V3_individual_key_principle_extraction_results/
-│   │   │   └── GPT-4o_individual_key_principle_extraction_results/
-│   │   └── Few-Shot Experiments (DeepSeek-Chat)/
-│   │       ├── FewShot_Experiments_DeepSeek.ipynb              # Few-shot evaluation notebook
-│   │       ├── FewShot_KeyPrinciples_Issue_Results.xlsx        # Accuracy summary (0/5/10/15/20-shot)
-│   │       └── {Zero,5,10,15,20}-Shot_individual_*_extraction_results/
-│   │
-│   ├── retrieval/                               # Main results — fact-only vs principle-augmented
-│   │   ├── generate_stage2_direct_pools_v2.py           # Pool generation: fact-only baseline
-│   │   ├── generate_stage2_single_stage_pools_v2.py     # Pool generation: principle-augmented
-│   │   ├── sbert_direct_v2v5.py                         # SBERT (fact-only)
-│   │   ├── sbert_single_stage_v1.py                     # SBERT (principle-augmented)
-│   │   ├── customlegalbert_*.py                         # Custom Legal-BERT (both settings)
-│   │   ├── longformer_*.py                              # Legal-Longformer (both settings)
-│   │   ├── pileoflaw_*.py                               # Pile-of-Law BERT (both settings)
-│   │   ├── roberta_large_*.py                           # Legal-English-RoBERTa (both settings)
-│   │   ├── sailer_*.py                                  # SAILER (both settings)
-│   │   ├── adaptllm_*.py                                # AdaptLLM (both settings)
-│   │   ├── legalbert_*.py                               # Legal-BERT (both settings)
-│   │   ├── saullm_*.py                                  # SaulLM-7B (both settings)
-│   │   ├── lawma_*.py                                   # Lawma-8B (both settings)
-│   │   └── run_*.pbs                                    # PBS job scripts for HPC cluster
-│   │
-│   ├── Field Granularity Ablation/              # Section 5.3 — fact + {issue, issue_group, all fields}
-│   │   ├── generate_stage2_fact_issue_pools_v1.py
-│   │   ├── generate_stage2_fact_issue_group_pools_v1.py
-│   │   ├── generate_stage2_all_fields_pools_v3.py
-│   │   ├── run_generate_fact_issue_pools_v1.pbs
-│   │   ├── run_generate_fact_issue_group_pools_v1.pbs
-│   │   ├── run_generate_all_fields_pools_v3.pbs
-│   │   ├── sbert_fact_issue_v1.py
-│   │   ├── sbert_fact_issue_group_v1.py
-│   │   ├── sbert_all_fields_v2.py
-│   │   ├── saullm_fact_issue_v1.py
-│   │   ├── saullm_fact_issue_group_v1.py
-│   │   ├── saullm_all_fields_v17.py
-│   │   ├── run_sbert_fact_issue_v1.pbs
-│   │   ├── run_sbert_fact_issue_group_v1.pbs
-│   │   ├── run_sbert_all_fields_v2.pbs
-│   │   ├── run_saullm_fact_issue_v1.pbs
-│   │   ├── run_saullm_fact_issue_group_v1.pbs
-│   │   └── run_saullm_all_fields_v17.pbs
-│   │
-│   ├── Context Ablation/                        # Section 5.4 — scrubbed ±200-word citation window
-│   │   ├── 06_Build_Scrubbed_Paragraph_Window.ipynb     # Notebook: build scrubbed window CSV
-│   │   ├── generate_stage2_paragraph_pools_v2.py        # Pool generation: paragraph-augmented
-│   │   ├── run_generate_stage2_paragraph_pools_v2.pbs
-│   │   ├── sbert_paragraph_v11.py                       # SBERT with scrubbed paragraph
-│   │   ├── saullm_paragraph_v5.py                       # SaulLM-7B with scrubbed paragraph
-│   │   ├── run_sbert_paragraph_v11.pbs
-│   │   └── run_saullm_paragraph_v5.pbs
-│   │
-│   └── Cold-Start Evaluation/                   # Section 5.5 — DeepSeek-predicted principle
-│       ├── run_coldstart_experiment_v4.py               # DeepSeek principle predictor + SaulLM eval
-│       └── run_coldstart_experiment_v4.pbs
-│
-├── img/
-│   ├── pipeline.png                             # Dataset construction pipeline figure
-│   ├── legal_hierarchy.png                      # Legal citation conceptual structure
-│   └── legal_hierarchy2.png                     # Knowledge graph structure
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
 ---
 
 ## Dataset Statistics
@@ -146,7 +42,7 @@ DeepSeek-V3 (15-shot, T=0) extracts three fields per citation paragraph: (1) Key
 
 **Source code:** [`code/extraction/`](code/extraction/)
 
-### LLM Selection (25 judgments, 725 case–principle pairs; 150 sampled for evaluation)
+### LLM Selection (25 judgments, 725 case–principle pairs)
 
 | Model | HSS | Cost/Case |
 |---|---|---|
@@ -282,7 +178,7 @@ Retrieval performance on SG-LegalCite (1000-way candidate pool). Relative gains 
 
 **Source code:** [`code/Field Granularity Ablation/`](code/Field%20Granularity%20Ablation/)
 
-To test whether the principle field is uniquely informative or whether any structured legal field would help equally, we evaluate five query settings on identical candidate pools (1 gold + 999 random negatives, 9,979 pools per setting):
+To test whether the principle field is uniquely informative or whether any structured legal field would help equally, we evaluate five query settings on identical candidate pools (1 gold + 999 random negatives):
 
 | Query Setting | SBERT MRR | SaulLM-7B MRR |
 |---|---|---|
@@ -359,10 +255,13 @@ These barriers are noted to highlight reproducibility challenges in legal NLP.
 
 If you use SG-LegalCite in your work, please cite:
 ```bibtex
-@inproceedings{anonymous2026sglegalcite,
+@article{anonymous2026sglegalcite,
   title  = {SG-LegalCite: A Principle-Augmented Benchmark for Legal Citation Retrieval in Singapore Law},
   author = {Anonymous Authors},
-  year   = {2026}
+  year   = {2026},
+  eprint = {2605.21057},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CL}
 }
 ```
 
@@ -378,6 +277,6 @@ Code is released under the MIT License.
 
 ## Acknowledgements
 
-AI coding assistants (e.g., ChatGPT) were used to support code development for the data extraction pipeline and model training, as well as manuscript polishing. All scientific design, methodology, and analysis are the authors' own work.
+LLMs were used to support code development for the data extraction pipeline and model training, as well as manuscript polishing. All scientific design, methodology, and analysis are the authors' own work.
 
-Expert validation was conducted by legally qualified annotators from two Singapore law schools. Experiments were run on a university HPC cluster (A100 GPUs).
+Expert validation was conducted by three legally qualified annotators from Singapore law schools. Experiments were run on a university HPC cluster (A100 GPUs).
