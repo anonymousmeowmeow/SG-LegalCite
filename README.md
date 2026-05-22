@@ -120,7 +120,7 @@ SG-LegalCite/
 ## Data Schema
 
 <p align="center">
-  <img src="img/legal_hierarchy_combined.png" alt="Data Schema" width="400">
+  <img src="img/legal_hierarchy_combined.png" alt="Data Schema" width="1000">
 </p>
 
 Each judgment contributes one shared **Fact** field and refers to multiple individual citations, each associated with its own **Key Principle**, **Cited Case**, **Issue**, and **Issue Group**. The hierarchy reflects the process of legal reasoning: facts describe the dispute as a whole, while individual citations are invoked for legal principles relevant to particular aspects of that dispute.
@@ -160,7 +160,7 @@ Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 wi
 ### Domain Distribution
 
 <p align="center">
-  <img src="img/domain-distribution.png" alt="Domain Distribution" width="400">
+  <img src="img/domain-distribution.png" alt="Domain Distribution" width="1000">
 </p>
 
 All 8,523 judgments are classified against the 34 practice-area tags used by [Singapore Law Watch](https://www.singaporelawwatch.sg/). The most represented primary domains are:
@@ -193,7 +193,7 @@ The corpus is **not artificially balanced** across domains. SG-LegalCite is inte
 ## Dataset Construction Pipeline
 
 <p align="center">
-  <img src="img/Pipeline.png" alt="Pipeline" width="400">
+  <img src="img/Pipeline.png" alt="Pipeline" width="1000">
 </p>
 
 The pipeline consists of three main steps:
