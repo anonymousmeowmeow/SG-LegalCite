@@ -18,7 +18,7 @@ SG-LegalCite operationalises a new retrieval paradigm where cited cases are rank
 
 This formulation is particularly important for Singapore, where the legal system has evolved independently: only domestic precedents are binding, while foreign authorities serve merely as persuasive references.
 
-The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–2025) using a cost-effective LLM pipeline (DeepSeek-V3 with 15-shot prompting) validated by three legal experts from Singapore law schools.
+The dataset is extracted from 8,523 Singapore Supreme Court judgments (2000–2025) using a cost-effective LLM pipeline (DeepSeek-V3 with 15-shot prompting) validated by three legal experts from Singapore law schools. The eLitigation archive contains 10,372 judgments over this period, of which 9,404 had valid URLs; 881 were dropped because they contained zero cited cases and could not contribute case–principle pairs, leaving 8,523 retained judgments.
 
 ---
 
