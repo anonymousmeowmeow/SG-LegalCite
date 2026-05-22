@@ -135,7 +135,7 @@ Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 wi
 
 ## Dataset Construction Pipeline
 
-![Pipeline](img/pipeline.png)
+![Pipeline](img/Pipeline.png)
 
 The pipeline consists of three main steps:
 
