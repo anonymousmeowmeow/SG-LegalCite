@@ -108,11 +108,27 @@ SG-LegalCite/
 │
 ├── img/
 │   ├── Pipeline.png                             # Dataset construction pipeline figure
-│   └── legal_hierarchy_combined.png             # Legal citation conceptual structure / knowledge graph
+│   ├── legal_hierarchy_combined.png             # Data schema: judgment → issue group → issue → cited case → principle
+│   └── domain-distribution.png                  # Distribution of judgments across legal domains
 ├── .gitignore
 ├── LICENSE
 └── README.md
 ```
+
+---
+
+## Data Schema
+
+![Data Schema](img/legal_hierarchy_combined.png)
+
+Each judgment contributes one shared **Fact** field and refers to multiple individual citations, each associated with its own **Key Principle**, **Cited Case**, **Issue**, and **Issue Group**. The hierarchy reflects the process of legal reasoning: facts describe the dispute as a whole, while individual citations are invoked for legal principles relevant to particular aspects of that dispute.
+
+Relationships:
+- **Judgment → Issue Group** (1:N) — A judgment can address multiple areas of law (e.g., family, contract, tort).
+- **Issue Group → Issue** (1:N) — Each legal area has multiple specific questions to resolve.
+- **Issue → Cited Case** (1:N) — Each issue is supported by multiple precedent citations.
+- **Cited Case ↔ Key Principle** (N:N) — One case can illustrate multiple principles; one principle can appear in multiple cases.
+- **Judgment → Fact** (1:1) — Each judgment has a single factual background.
 
 ---
 
@@ -139,6 +155,35 @@ Each record is a triplet **(f, k, c)**:
 
 Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 with the Singapore neutral citation (`Judgment_Reference`) of the citing judgment (e.g., `https://www.elitigation.sg/gd/s/2023_SGCA_15` ↔ `[2023] SGCA 15`).
 
+### Domain Distribution
+
+![Domain Distribution](img/domain-distribution.png)
+
+All 8,523 judgments are classified against the 34 practice-area tags used by [Singapore Law Watch](https://www.singaporelawwatch.sg/). The most represented primary domains are:
+
+| Domain | Judgments | Share |
+|---|---|---|
+| Criminal Law | 1,765 | 20.7% |
+| Business & Commerce | 929 | 10.9% |
+| Civil Law & Procedure | 720 | 8.5% |
+| Tort | 576 | 6.8% |
+| Family Law | 575 | 6.8% |
+| Dispute Resolution | 538 | 6.3% |
+| Insolvency | 512 | 6.0% |
+| Company Law | 439 | 5.2% |
+| Property | 424 | 5.0% |
+| Professional Practice & Education | 311 | 3.6% |
+| Equity & Trusts | 279 | 3.3% |
+| Intellectual Property | 278 | 3.3% |
+| Construction & Infrastructure | 212 | 2.5% |
+| Shipping | 196 | 2.3% |
+| Employment Law | 158 | 1.9% |
+| Banking & Financial Services | 145 | 1.7% |
+| Administrative & Constitutional Law | 141 | 1.7% |
+| Others (<1.5% each) | 345 | 4.0% |
+
+The corpus is **not artificially balanced** across domains. SG-LegalCite is intended as a benchmark for retrieval systems deployed by Singapore legal practitioners, and the natural distribution — dominated by criminal and commercial matters, with sparse coverage of emerging areas such as data protection and health care & life sciences — is itself the population a deployed system would face. The observed skew reflects the institutional role of the Supreme Court (apex criminal jurisdiction; commercial-hub case mix) and is consistent with how the Singapore Law Reports themselves catalogue judgments.
+
 ---
 
 ## Dataset Construction Pipeline
@@ -157,6 +202,34 @@ Playwright + BeautifulSoup extract cited case names and ±5 surrounding paragrap
 DeepSeek-V3 (15-shot, T=0) extracts three fields per citation paragraph: (1) Key Principles Illustrated, (2) Issue Group, (3) Issue.
 
 **Source code:** [`code/extraction/`](code/extraction/)
+
+### Worked Example (Citation-level Record)
+
+The following example illustrates how raw factual and citation context from a citing judgment are transformed into the structured fields in SG-LegalCite.
+
+<details>
+<summary><b>Click to expand — example record from <i>Re Ariffin Iskandar Sha bin Ali Akbar and other matters</i> [2025] SGHC 156</b></summary>
+
+**Citing Judgment**
+`Re Ariffin Iskandar Sha bin Ali Akbar and other matters [2025] SGHC 156`
+
+**Raw Fact** *(scraped Background section, 1,139 words, abbreviated)*
+> Where the court determines that an applicant is not yet suitable for admission to the Bar on account of some issue of character, the usual course has been to invite the applicant to withdraw his or her application [...] The applications before me are three such Legacy Cases, which were due for consideration just as the Legal Profession (Admission) Rules 2024 took effect [...] while the applicants might not yet be fit for admission, withdrawal would not be appropriate.
+
+**Citation Paragraph** *(987 words, abbreviated)*
+> The second incident occurred while Mr Foo was taking the LAW204 Constitutional & Administrative Law module [...] However, his essay contained phrases that appeared to have been lifted from Wikipedia without attribution [...] The AG, SILE and LSS accepted that the LAW204 Incident did not disclose dishonesty, but a lack of academic diligence: *Re Suria Shaik Aziz* [2023] 5 SLR 1272 at [25]. They therefore submitted that the LAW204 Incident did not affect Mr Foo's suitability of character. [...] Mr Foo did not contest the position taken by the AG and the SILE in respect of deferring his application.
+
+**↓ Extracted Fields ↓**
+
+| Field | Value |
+|---|---|
+| **Fact** (LLM-summary) | My client was found not yet fit for admission to the Bar due to a character issue, but his application was stayed for 18 months instead of dismissed because he qualified under the old admission rules. The stay allows him time for rehabilitation without forcing him to retake exams and restart his training period. |
+| **Issue** | Whether the stakeholders agree that Mr Foo should be admitted to the Bar. |
+| **Key Principle Illustrated** | Dishonesty is to be distinguished from a lack of academic diligence. |
+| **Issue Group** | Admission of Candidate |
+| **Cited Case** | *Re Suria Shaik Aziz* [2023] 5 SLR 1272 |
+
+</details>
 
 ### LLM Selection (25 judgments, 725 case–principle pairs)
 
@@ -253,7 +326,7 @@ Fine-tuning uses symmetric InfoNCE contrastive loss:
 
 $$\mathcal{L} = \frac{1}{2} \left( \mathcal{L}_{k \to c} + \mathcal{L}_{c \to k} \right)$$
 
-**Data split:** 80/10/10 (train/val/test), split by unique judgment URL to prevent data leakage.
+**Data split:** 8:1:1 (train/val/test), split by unique judgment URL to prevent data leakage.
 
 **Training parameters:**
 
@@ -392,4 +465,3 @@ Code is released under the MIT License.
 ## Acknowledgements
 
 LLMs were used to support code development for the data extraction pipeline and model training, as well as manuscript polishing. All scientific design, methodology, and analysis are the authors' own work.
-
