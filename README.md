@@ -163,28 +163,7 @@ Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 wi
   <img src="img/domain-distribution.png" alt="Domain Distribution" width="500">
 </p>
 
-All 8,523 judgments are classified against the 34 practice-area tags used by [Singapore Law Watch](https://www.singaporelawwatch.sg/). The most represented primary domains are:
-
-| Domain | Judgments | Share |
-|---|---|---|
-| Criminal Law | 1,765 | 20.7% |
-| Business & Commerce | 929 | 10.9% |
-| Civil Law & Procedure | 720 | 8.5% |
-| Tort | 576 | 6.8% |
-| Family Law | 575 | 6.8% |
-| Dispute Resolution | 538 | 6.3% |
-| Insolvency | 512 | 6.0% |
-| Company Law | 439 | 5.2% |
-| Property | 424 | 5.0% |
-| Professional Practice & Education | 311 | 3.6% |
-| Equity & Trusts | 279 | 3.3% |
-| Intellectual Property | 278 | 3.3% |
-| Construction & Infrastructure | 212 | 2.5% |
-| Shipping | 196 | 2.3% |
-| Employment Law | 158 | 1.9% |
-| Banking & Financial Services | 145 | 1.7% |
-| Administrative & Constitutional Law | 141 | 1.7% |
-| Others (<1.5% each) | 345 | 4.0% |
+All 8,523 judgments are classified against the 34 practice-area tags used by [Singapore Law Watch](https://www.singaporelawwatch.sg/). The most represented primary domains are Criminal Law (20.7%), Business & Commerce (10.9%), Civil Law & Procedure (8.5%), Tort (6.8%), and Family Law (6.8%); the full distribution is shown in the chart above.
 
 The corpus is **not artificially balanced** across domains. SG-LegalCite is intended as a benchmark for retrieval systems deployed by Singapore legal practitioners, and the natural distribution — dominated by criminal and commercial matters, with sparse coverage of emerging areas such as data protection and health care & life sciences — is itself the population a deployed system would face. The observed skew reflects the institutional role of the Supreme Court (apex criminal jurisdiction; commercial-hub case mix) and is consistent with how the Singapore Law Reports themselves catalogue judgments.
 
