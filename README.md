@@ -393,4 +393,3 @@ Code is released under the MIT License.
 
 LLMs were used to support code development for the data extraction pipeline and model training, as well as manuscript polishing. All scientific design, methodology, and analysis are the authors' own work.
 
-Expert validation was conducted by three legally qualified annotators from Singapore law schools. Experiments were run on a university HPC cluster (A100 GPUs).
