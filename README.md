@@ -160,7 +160,7 @@ Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 wi
 ### Domain Distribution
 
 <p align="center">
-  <img src="img/domain-distribution.png" alt="Domain Distribution" width="700">
+  <img src="img/domain-distribution.png" alt="Domain Distribution" width="500">
 </p>
 
 All 8,523 judgments are classified against the 34 practice-area tags used by [Singapore Law Watch](https://www.singaporelawwatch.sg/). The most represented primary domains are:
