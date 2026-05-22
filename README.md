@@ -37,11 +37,11 @@ SG-LegalCite/
 │   │   ├── 04_Final_Concatenation_Batch.py      # Step 4: Add Case Name + Precedential Weight
 │   │   ├── Scrape Cited Case Judgements Pipeline.py    # Scrape full judgment text for cited cases
 │   │   ├── prompt_with_paragraphs_FINAL.txt     # 15-shot DeepSeek extraction prompt
-│   │   ├── LLM_Selection/
+│   │   ├── LLM Selection/
 │   │   │   ├── LLM_Selection_KeyPrinciples_All_Models.ipynb    # LLM comparison evaluation notebook
 │   │   │   ├── LLM_Selection_KeyPrinciples_Results.xlsx        # Accuracy summary (Claude/DeepSeek/GPT-4o)
 │   │   │   ├── Claude Sonnet 4_individual_key_principle_extraction_results/
-│   │   │   ├── DeepSeek-V3_individual_key_principle_extraction_results/
+│   │   │   ├── DeepSeek-Chat_individual_key_principle_extraction_results/
 │   │   │   └── GPT-4o_individual_key_principle_extraction_results/
 │   │   └── Few-Shot Experiments (DeepSeek-Chat)/
 │   │       ├── FewShot_Experiments_DeepSeek.ipynb              # Few-shot evaluation notebook
@@ -53,15 +53,24 @@ SG-LegalCite/
 │   │   ├── generate_stage2_single_stage_pools_v2.py     # Pool generation: principle-augmented
 │   │   ├── sbert_direct_v2v5.py                         # SBERT (fact-only)
 │   │   ├── sbert_single_stage_v1.py                     # SBERT (principle-augmented)
-│   │   ├── customlegalbert_*.py                         # Custom Legal-BERT (both settings)
-│   │   ├── longformer_*.py                              # Legal-Longformer (both settings)
-│   │   ├── pileoflaw_*.py                               # Pile-of-Law BERT (both settings)
-│   │   ├── roberta_large_*.py                           # Legal-English-RoBERTa (both settings)
-│   │   ├── sailer_*.py                                  # SAILER (both settings)
-│   │   ├── adaptllm_*.py                                # AdaptLLM (both settings)
-│   │   ├── legalbert_*.py                               # Legal-BERT (both settings)
-│   │   ├── saullm_*.py                                  # SaulLM-7B (both settings)
-│   │   ├── lawma_*.py                                   # Lawma-8B (both settings)
+│   │   ├── customlegalbert_direct_v1.py                 # Custom Legal-BERT (fact-only)
+│   │   ├── customlegalbert_single_stage_v1.py           # Custom Legal-BERT (principle-augmented)
+│   │   ├── longformer_direct_v1.py                      # Legal-Longformer (fact-only)
+│   │   ├── longformer_single_stage_v1.py                # Legal-Longformer (principle-augmented)
+│   │   ├── pileoflaw_direct_v1.py                       # Pile-of-Law BERT (fact-only)
+│   │   ├── pileoflaw_single_stage_v2.py                 # Pile-of-Law BERT (principle-augmented)
+│   │   ├── roberta_large_direct_v1.py                   # Legal-English-RoBERTa (fact-only)
+│   │   ├── roberta_large_single_stage_v1.py             # Legal-English-RoBERTa (principle-augmented)
+│   │   ├── sailer_direct_v1.py                          # SAILER (fact-only)
+│   │   ├── sailer_single_stage_v1.py                    # SAILER (principle-augmented)
+│   │   ├── adaptllm_direct_v1.py                        # AdaptLLM (fact-only)
+│   │   ├── adaptllm_single_stage_v2.py                  # AdaptLLM (principle-augmented)
+│   │   ├── legalbert_stage2_direct_v2.py                # Legal-BERT (fact-only)
+│   │   ├── legalbert_single_stage.py                    # Legal-BERT (principle-augmented)
+│   │   ├── saullm_direct_v2.py                          # SaulLM-7B (fact-only)
+│   │   ├── saullm_single_stage_v1.py                    # SaulLM-7B (principle-augmented)
+│   │   ├── lawma_direct_v3.py                           # Lawma-8B (fact-only)
+│   │   ├── lawma_single_stage_v2.py                     # Lawma-8B (principle-augmented)
 │   │   └── run_*.pbs                                    # PBS job scripts for HPC cluster
 │   │
 │   ├── Field Granularity Ablation/              # Section 5.3 — fact + {issue, issue_group, all fields}
@@ -98,9 +107,8 @@ SG-LegalCite/
 │       └── run_coldstart_experiment_v4.pbs
 │
 ├── img/
-│   ├── pipeline.png                             # Dataset construction pipeline figure
-│   ├── legal_hierarchy.png                      # Legal citation conceptual structure
-│   └── legal_hierarchy2.png                     # Knowledge graph structure
+│   ├── Pipeline.png                             # Dataset construction pipeline figure
+│   └── legal_hierarchy_combined.png             # Legal citation conceptual structure / knowledge graph
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -135,7 +143,7 @@ Each judgment is uniquely identified by `Judgment_URL`, which corresponds 1:1 wi
 
 ## Dataset Construction Pipeline
 
-![Pipeline](img/pipeline.png)
+![Pipeline](img/Pipeline.png)
 
 The pipeline consists of three main steps:
 
